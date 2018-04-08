@@ -127,7 +127,7 @@ function drawUserImage() {
     var layer = new fengmap.FMImageMarkerLayer("imageMarker");
     groupLayer.addLayer(layer);
     //截止日期，之前不显示
-    var EndTime = new Date().Format("2000-2-13 12:22:12");
+    var EndTime = new Date().Format("1998-2-13 12:22:12");
     for (var i = 0; i < users.length; i++) {
         var user_x = users[i]["x"];
         var user_y = users[i]["y"];
@@ -176,7 +176,7 @@ Date.prototype.Format = function (fmt) {
 function ajaxGetInfo() {
     $.ajax({
         type: "post",
-        url: "/selectAllUsers",
+        url: "/selectAllUserLocation",
         data: {},
         contentType: "application/x-www-form-urlencoded",
         cache: false,
@@ -188,7 +188,6 @@ function ajaxGetInfo() {
                 var json = 'window.user = ' + JSON.stringify(data[i]);
                 Object.prototype.toString.constructor(json)();
                 users[i] = user;
-
             }
         }
     });

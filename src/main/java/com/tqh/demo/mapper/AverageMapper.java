@@ -4,10 +4,11 @@ import com.tqh.demo.model.Average;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
+@Repository
 public interface AverageMapper {
     @Select("SELECT * FROM average WHERE samplePoint = #{samplePoint}")
     Average selectAverage(String samplePoint);

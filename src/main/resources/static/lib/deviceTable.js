@@ -1,6 +1,6 @@
-var planDataTable = $("#myTable").table(
+var planDataTable = $("#device_table").table(
     {
-        url : "/getData",
+        url : "/getDeviceInfo",
         type:"get",
         columns : [
             {

@@ -3,19 +3,22 @@ package com.tqh.demo.controller;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.tqh.demo.model.Users;
-import com.tqh.demo.service.UsersService;
+import com.tqh.demo.model.User;
+import com.tqh.demo.model.UserLocation;
+import com.tqh.demo.service.UserLocationService;
 import com.tqh.demo.util.JsonTool;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Arrays;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,41 +28,39 @@ import java.util.Map;
 @RequestMapping("/")
 public class IotMapController {
     @Autowired
-    UsersService usersService;
+    UserLocationService userLocationService;
+
     @RequestMapping("/iotMap")
-    public String openIotMap(){
-
-        return "hello_FengMap";
-    }
-    @RequestMapping("/table")
-    public String openTable(){
-
-        return "table_plug";
-    }
-    @RequestMapping("/ajax")
-    public String test(){
-        return "ajax";
+    public String openLoginPage(HttpSession session,Model model){
+            return "login";
     }
 
-    @RequestMapping("/selectAllUsers")
-    @ResponseBody
-    public List<Users> selectAllUsers(){
-        List<Users> users=usersService.selectAll();
-        return users;
+    @RequestMapping(value = "/deviceTable/{userName}",method = RequestMethod.GET)
+    public String openDeviceTable(HttpSession session, @PathVariable("userName") String userName){
+        User user=(User) session.getAttribute(userName);
+        if(user==null){
+            return "userNotFound";
+        }
+        if("manager".equals(user.getRole())){
+            return "deviceTable";
+        }else {
+            return "pageNotFound";
+        }
     }
 
-    @ResponseBody
-    @RequestMapping(value = "/getData",method = RequestMethod.GET)
-    public String getDevicesInfo(int pageSize, int page) {//两个参数是传入的data{}里写好的，不能改
-        System.out.println("get ajax request");
-        //这个操作将生成一个Page加入map里
-        PageHelper.startPage(page, pageSize);
-        List<Users> users= usersService.selectAll();
-        long total = ((Page<Users>) users).getTotal();
-        Map<String, Object> map = new HashMap<>();
-        map.put("list", users);
-        map.put("total", total);
-        return JsonTool.objectToJson(map);
+    @RequestMapping(value = "/datasourceTable/{userName}",method = RequestMethod.GET)
+    public String openDatasourceTable(HttpSession session, @PathVariable("userName") String userName){
+        User user=(User) session.getAttribute(userName);
+        if(user==null){
+            return "userNotFound";
+        }
+        if("manager".equals(user.getRole())){
+            return "datasourceTable";
+        }else {
+            return "pageNotFound";
+        }
     }
+
+
 
 }

@@ -1,6 +1,6 @@
 package com.tqh.demo.model;
 
-public class Users {
+public class UserLocation {
     private String device;
     private String x;
     private String y;
