@@ -70,38 +70,12 @@
             });
 
         });
-
-//        function checkPassWord() {
-//                var temp=0;
-//                $.ajax({
-//                    type: "post",
-//                    url: "/checkPassWord",
-//                    async:false,//设置同步方式，非异步！
-//                    cache: false,
-//                    data: {'userName': $("#userID").val(), 'password': $("#psw").val()},
-//                    dataType: "json",
-//                    success: function (data) {
-//                        if(data){
-//                            temp=true;
-//                        }else {
-//                            $("#tip").text("密码错误");
-//                            $("#psw").val("");
-//                            temp=false;
-//                        }
-//                    }
-//                });
-//                if(temp){
-//                    return true;
-//                }else {
-//                    return false;
-//                }
-//        }
     </script>
 </head>
 <body background="static/img/backgroundImg.jpg" >
 <div>
 <span class="col-sm-4" style="font-size:40px;margin-left: 43%;margin-top:5% ;font-weight: bold;color: white">IOTMap</span>
-<form id="login_form"   action="/login" method="post" class="form-horizontal col-sm-6  col-sm-offset-3" style="margin-top: 7%;" role="form">
+<form id="login_form"   action="/iotMap" method="post" class="form-horizontal col-sm-6  col-sm-offset-3" style="margin-top: 7%;" role="form">
     <div class="form-group">
         <span class="glyphicon glyphicon-user col-sm-2 col-sm-offset-1 control-label"></span>
         <div class="col-sm-6">

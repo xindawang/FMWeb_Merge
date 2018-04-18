@@ -16,4 +16,7 @@ public class UserLocationService {
 
         return userLocationMapper.selectAll();
     }
+    public UserLocation selectUser(String id){
+        return userLocationMapper.selectUser(id);
+    }
 }

@@ -10,5 +10,8 @@ public interface UserLocationMapper {
     @Select("SELECT * FROM userlocation")
     List<UserLocation> selectAll();
 
+    @Select("SELECT * FROM userlocation where no=#{id}")
+    UserLocation selectUser(String id);
+
 
 }

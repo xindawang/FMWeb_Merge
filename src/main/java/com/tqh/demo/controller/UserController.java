@@ -21,27 +21,27 @@ public class UserController {
 
     @Autowired
     UserService userService;
-    @RequestMapping("/login")
+    @RequestMapping("/iotMap")
     public String openIotMap(HttpServletRequest request, HttpSession session,Model model){
         String userName=request.getParameter("userName");
         String passWord=request.getParameter("password");
         User user=userService.selectUser(userName);
         if(user==null){
-            return "login";
+            return "redirect:/login";
         }
         if(userService.checkPassWord(user.getUserName(),passWord)){
             session.setAttribute(userName,user);
             model.addAttribute("user",user);
-            return "hello_FengMap";
+            return "openLayers";
         }else {
-            return "login";
+            return "redirect:/login";
         }
     }
 
     @RequestMapping("/logout/{userName}")
     public String logOut(HttpSession session,@PathVariable("userName") String userName){
         session.removeAttribute(userName);
-        return "redirect:/iotMap";
+        return "redirect:/login";
     }
 
     @ResponseBody

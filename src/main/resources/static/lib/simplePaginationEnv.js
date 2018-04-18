@@ -1,2 +1,0 @@
-document.write('<script type="text/javascript" src="/projmgt/plugin/simplePagination/jquery.simplePagination.js"></script>')
-document.write('<link rel="stylesheet" type="text/css" href="/projmgt/plugin/simplePagination/simplePagination.css">')

@@ -180,6 +180,7 @@ function ajaxGetInfo() {
         data: {},
         contentType: "application/x-www-form-urlencoded",
         cache: false,
+        async:false,
         dataType: "json",
         success: function (data, textStatus, jqXHR) {
             //遍历data 把每个用户分离出来加入users

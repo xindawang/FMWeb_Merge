@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>IOT室内地图</title>
+    <link rel="stylesheet" href=" http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/ol.css" />
+    <style>
+        .ol-popup {
+            position: absolute;
+            background-color: white;
+            -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #cccccc;
+            bottom: 12px;
+            left: -50px;
+        }
+        .ol-popup:after, .ol-popup:before {
+            top: 100%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+        .ol-popup:after {
+            border-top-color: white;
+            border-width: 10px;
+            left: 48px;
+            margin-left: -10px;
+        }
+        .ol-popup:before {
+            border-top-color: #cccccc;
+            border-width: 11px;
+            left: 48px;
+            margin-left: -11px;
+        }
+        .ol-popup-closer {
+            text-decoration: none;
+            position: absolute;
+            top: 2px;
+            right: 8px;
+        }
+        .ol-popup-closer:after {
+            content: "✖";
+        }
+    </style>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</head>
+<body style="height: 100%">
+<div id="map" style="height:90%;margin: 0;padding: 0;position: relative;"  ></div>
+<div class="col-md-12" style="margin-top: 1%;position: relative;padding-left: 0.5%">
+    <a id="table" class="btn btn-primary" th:href="@{${user.userName}+'/deviceTable'}" target="_blank">设备信息</a>
+    <a id="table2" class="btn btn-primary" th:href="@{${user.userName}+'/datasourceTable'}" target="_blank">数据信息</a>
+    <a id="table3" class="btn btn-primary" th:href="@{${user.userName}+'/fingerTable'}" target="_blank">指纹信息</a>
+    <span th:text="'用户：'+${user.userName}" style="font-weight: bold;font-size: 15px;margin-left: 3%"/>
+    <a th:href="@{'/logout/'+${user.userName}}" style="text-align:center;margin-left: 1%">注销</a>
+</div>
+<script src="/static/lib/ol-debug.js"></script>
+<script src="/static/lib/openLayersMap.js"></script>
+</body>
+</html>

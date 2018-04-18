@@ -1,5 +1,6 @@
-$("#device_table").bootstrapTable({ // 对应table标签的id
-    url: "/selectAllUserLocation", // 获取表格数据的url
+
+$("#finger_table").bootstrapTable({ // 对应table标签的id
+    url: "/getFingerInfo", // 获取表格数据的url
     cache: false, // 设置为 false 禁用 AJAX 数据缓存， 默认为true
     striped: false,  //表格显示条纹，默认为false
     pagination: true, // 在表格底部显示分页组件，默认false
@@ -8,32 +9,20 @@ $("#device_table").bootstrapTable({ // 对应table标签的id
     pageNumber: 1, // 首页页码
     columns: [
         {
-            field: 'device', // 返回json数据中的name
-            title: '设备', // 表格表头显示文字
+            field: 'id', // 返回json数据中的name
+            title: 'id', // 表格表头显示文字
             align: 'center', // 左右居中
             valign: 'middle' // 上下居中
         },
         {
-            field: 'x',
-            title: 'X',
+            field: 'table_name',
+            title: '表名',
             align: 'center',
             valign: 'middle'
         },
         {
-            field: 'y', // 返回json数据中的name
-            title: 'Y', // 表格表头显示文字
-            align: 'center', // 左右居中
-            valign: 'middle' // 上下居中
-        },
-        {
-            field: 'saveTime', // 返回json数据中的name
-            title: '记录时间', // 表格表头显示文字
-            align: 'center', // 左右居中
-            valign: 'middle' // 上下居中
-        },
-        {
-            field: 'no', // 返回json数据中的name
-            title: '编号', // 表格表头显示文字
+            field: 'update_time', // 返回json数据中的name
+            title: '更新时间', // 表格表头显示文字
             align: 'center', // 左右居中
             valign: 'middle' // 上下居中
         },
@@ -43,8 +32,11 @@ $("#device_table").bootstrapTable({ // 对应table标签的id
             valign: 'middle',
             width: 160, // 定义列的宽度，单位为像素px
             formatter: function (value, row, index) {
-                return '<button class="btn btn-danger btn-sm" onclick="del('+row.no+')">删除</button>';
+                return '<a class="btn btn-danger btn-sm" onclick="return conf('+row.id+')" >删除</a>'+
+                '<a class="btn btn-primary btn-sm" onclick="" href="" >使用指纹</a>';
             }
+
+
         }
     ],
     onLoadSuccess: function(){  //加载成功时执行
@@ -54,8 +46,21 @@ $("#device_table").bootstrapTable({ // 对应table标签的id
         console.info("加载数据失败");
     }
 
-});
-
-function del(a) {
-  alert(a);
+})
+function conf(id) {
+    if( confirm("确定删除指纹吗？")){
+        $.ajax({
+            type: "post",
+            url: "/deleteFinger/"+id,
+            data: {},
+            cache: false,
+            async: false,
+            dataType: "json",
+            success: function (data) {
+                if(data){
+                    window.location.reload();
+                }
+            }
+        });
+    }
 }

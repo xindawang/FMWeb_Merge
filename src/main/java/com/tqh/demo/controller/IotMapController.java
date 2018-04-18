@@ -30,12 +30,13 @@ public class IotMapController {
     @Autowired
     UserLocationService userLocationService;
 
-    @RequestMapping("/iotMap")
-    public String openLoginPage(HttpSession session,Model model){
+
+    @RequestMapping("/login")
+    public String openLoginPage(){
             return "login";
     }
 
-    @RequestMapping(value = "/deviceTable/{userName}",method = RequestMethod.GET)
+    @RequestMapping(value = "/{userName}/deviceTable",method = RequestMethod.GET)
     public String openDeviceTable(HttpSession session, @PathVariable("userName") String userName){
         User user=(User) session.getAttribute(userName);
         if(user==null){
@@ -48,7 +49,7 @@ public class IotMapController {
         }
     }
 
-    @RequestMapping(value = "/datasourceTable/{userName}",method = RequestMethod.GET)
+    @RequestMapping(value = "/{userName}/datasourceTable",method = RequestMethod.GET)
     public String openDatasourceTable(HttpSession session, @PathVariable("userName") String userName){
         User user=(User) session.getAttribute(userName);
         if(user==null){
@@ -56,6 +57,19 @@ public class IotMapController {
         }
         if("manager".equals(user.getRole())){
             return "datasourceTable";
+        }else {
+            return "pageNotFound";
+        }
+    }
+
+    @RequestMapping(value = "/{userName}/fingerTable",method = RequestMethod.GET)
+    public String openFingerTable(HttpSession session, @PathVariable("userName") String userName){
+        User user=(User) session.getAttribute(userName);
+        if(user==null){
+            return "userNotFound";
+        }
+        if("manager".equals(user.getRole())){
+            return "fingerTable";
         }else {
             return "pageNotFound";
         }
