@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IOTMAP室内定位系统</title>
+<link rel="stylesheet" href=" http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+<link href="/static/css/styles.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/static/css/ol.css" />
+<style>
+		.ol-popup {
+			position: absolute;
+			background-color: white;
+			-webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+			filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+			padding: 15px;
+			border-radius: 10px;
+			border: 1px solid #cccccc;
+			bottom: 12px;
+			left: -50px;
+		}
+		.ol-popup:after, .ol-popup:before {
+			top: 100%;
+			border: solid transparent;
+			content: " ";
+			height: 0;
+			width: 0;
+			position: absolute;
+			pointer-events: none;
+		}
+		.ol-popup:after {
+			border-top-color: white;
+			border-width: 10px;
+			left: 48px;
+			margin-left: -10px;
+		}
+		.ol-popup:before {
+			border-top-color: #cccccc;
+			border-width: 11px;
+			left: 48px;
+			margin-left: -11px;
+		}
+		.ol-popup-closer {
+			text-decoration: none;
+			position: absolute;
+			top: 2px;
+			right: 8px;
+		}
+		.ol-popup-closer:after {
+			content: "✖";
+		}
+	</style>
+<!--Icons-->
+<script src="/static/lib/lumino.glyphs.js"></script>
+
+<!--[if lt IE 9]>
+<script src="/static/lib/html5shiv.min.js"></script>
+<script src="/static/lib/respond.min.js"></script>
+<![endif]-->
+
+</head>
+
+<body>
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#"><span>IOTMap</span>室内地图</a>
+				<ul class="user-menu">
+					<li class="dropdown pull-right">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><svg class="glyph stroked male-user"><use xlink:href="#stroked-male-user"></use></svg><span th:text="${user.userName}"/> <span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="#"><svg class="glyph stroked male-user"><use xlink:href="#stroked-male-user"></use></svg> Profile</a></li>
+							<li><a href="#"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"></use></svg> Settings</a></li>
+							<li><a href="/logout"><svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Logout</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+							
+		</div><!-- /.container-fluid -->
+	</nav>
+		
+	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+		<form role="search">
+			<div class="form-group">
+				<input type="text" class="form-control" placeholder="搜索" />
+			</div>
+		</form>
+		<ul class="nav menu">
+			<li class="active"><a href="/openMap"><svg class="glyph stroked dashboard-dial"><use xlink:href="#stroked-dashboard-dial"></use></svg> 地图</a></li>
+			<li><a th:href="@{/deviceTable}"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> 设备信息</a></li>
+			<li><a th:href="@{/datasourceTable}"><svg class="glyph stroked table"><use xlink:href="#stroked-table"></use></svg> 数据信息</a></li>
+			<li><a th:href="@{/fingerTable}"><svg class="glyph stroked app-window"><use xlink:href="#stroked-app-window"></use></svg> 指纹信息</a></li>
+			<li role="presentation" class="divider"></li>
+			<li><a href="#"><svg class="glyph stroked star"><use xlink:href="#stroked-star"></use></svg> About IOTMAP</a></li>
+		</ul>
+
+	</div><!--/.sidebar-->
+	<div id="map" style="margin-left: 17%;margin-top: 10px;"  ></div>
+
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	<script src="/static/lib/ol-debug.js"></script>
+	<script src="/static/lib/openLayersMap.js"></script>
+</body>
+
+</html>

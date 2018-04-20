@@ -27,21 +27,21 @@ public class UserController {
         String passWord=request.getParameter("password");
         User user=userService.selectUser(userName);
         if(user==null){
-            return "redirect:/login";
+            return "redirect:/openMap";
         }
         if(userService.checkPassWord(user.getUserName(),passWord)){
-            session.setAttribute(userName,user);
+            session.setAttribute("userNow",user);
             model.addAttribute("user",user);
-            return "openLayers";
+            return "mapPage";
         }else {
-            return "redirect:/login";
+            return "redirect:/openMap";
         }
     }
 
-    @RequestMapping("/logout/{userName}")
-    public String logOut(HttpSession session,@PathVariable("userName") String userName){
-        session.removeAttribute(userName);
-        return "redirect:/login";
+    @RequestMapping("/logout")
+    public String logOut(HttpSession session){
+        session.removeAttribute("userNow");
+        return "redirect:/openMap";
     }
 
     @ResponseBody

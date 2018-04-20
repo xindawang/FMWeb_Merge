@@ -2,11 +2,22 @@
 $("#finger_table").bootstrapTable({ // 对应table标签的id
     url: "/getFingerInfo", // 获取表格数据的url
     cache: false, // 设置为 false 禁用 AJAX 数据缓存， 默认为true
-    striped: false,  //表格显示条纹，默认为false
+    striped: true,  //表格显示条纹，默认为false
     pagination: true, // 在表格底部显示分页组件，默认false
     pageList: [10, 20], // 设置页面可以显示的数据条数
     pageSize: 10, // 页面数据条数
     pageNumber: 1, // 首页页码
+    search:true,//搜索框
+    searchOnEnterKey:true,//设置为 true时，按回车触发搜索方法，否则自动触发搜索方法
+    showRefresh:true,//刷新按钮
+    // showHeader:true,//列头
+    // showFooter:true,//列尾
+    showColumns:true,
+    // smartDisplay:true,//设置为 true可以在分页和卡片视图快速切换
+    showToggle:true,//是否显示 切换试图（table/card）按钮
+    showPaginationSwitch:true,//数据条选择框
+    searchAlign:'left',
+    buttonsAlign:'left',
     columns: [
         {
             field: 'id', // 返回json数据中的name

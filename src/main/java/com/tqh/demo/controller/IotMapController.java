@@ -31,14 +31,24 @@ public class IotMapController {
     UserLocationService userLocationService;
 
 
-    @RequestMapping("/login")
-    public String openLoginPage(){
+
+
+
+    @RequestMapping("/openMap")
+    public String openLoginPage(HttpSession session,Model model){
+        User user= (User) session.getAttribute("userNow");
+        model.addAttribute("user",user);
+        if(user==null){
             return "login";
+        }else {
+            return "mapPage";
+        }
     }
 
-    @RequestMapping(value = "/{userName}/deviceTable",method = RequestMethod.GET)
-    public String openDeviceTable(HttpSession session, @PathVariable("userName") String userName){
-        User user=(User) session.getAttribute(userName);
+    @RequestMapping(value = "/deviceTable",method = RequestMethod.GET)
+    public String openDeviceTable(HttpSession session,Model model){
+        User user=(User) session.getAttribute("userNow");
+        model.addAttribute("user",user);
         if(user==null){
             return "userNotFound";
         }
@@ -49,9 +59,10 @@ public class IotMapController {
         }
     }
 
-    @RequestMapping(value = "/{userName}/datasourceTable",method = RequestMethod.GET)
-    public String openDatasourceTable(HttpSession session, @PathVariable("userName") String userName){
-        User user=(User) session.getAttribute(userName);
+    @RequestMapping(value = "/datasourceTable",method = RequestMethod.GET)
+    public String openDatasourceTable(HttpSession session, Model model){
+        User user=(User) session.getAttribute("userNow");
+        model.addAttribute("user",user);
         if(user==null){
             return "userNotFound";
         }
@@ -62,9 +73,10 @@ public class IotMapController {
         }
     }
 
-    @RequestMapping(value = "/{userName}/fingerTable",method = RequestMethod.GET)
-    public String openFingerTable(HttpSession session, @PathVariable("userName") String userName){
-        User user=(User) session.getAttribute(userName);
+    @RequestMapping(value = "/fingerTable",method = RequestMethod.GET)
+    public String openFingerTable(HttpSession session,Model model){
+        User user=(User) session.getAttribute("userNow");
+        model.addAttribute("user",user);
         if(user==null){
             return "userNotFound";
         }

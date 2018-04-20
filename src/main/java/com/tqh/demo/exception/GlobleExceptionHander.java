@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class GlobleExceptionHander {
 
     private final static Logger logger= LoggerFactory.getLogger(GlobleExceptionHander.class);
+
     @ExceptionHandler(DataException.class)
     @ResponseBody
     public String DataExceptionHandler(DataException e){
