@@ -27,12 +27,11 @@ import java.util.Map;
 @Controller
 @RequestMapping("/")
 public class IotMapController {
+
+    private String role_admin ="admin";
+
     @Autowired
     UserLocationService userLocationService;
-
-
-
-
 
     @RequestMapping("/openMap")
     public String openLoginPage(HttpSession session,Model model){
@@ -41,7 +40,7 @@ public class IotMapController {
         if(user==null){
             return "login";
         }else {
-            return "mapPage";
+            return "hello_FengMap";
         }
     }
 
@@ -52,7 +51,7 @@ public class IotMapController {
         if(user==null){
             return "userNotFound";
         }
-        if("manager".equals(user.getRole())){
+        if(role_admin.equals(user.getRole())){
             return "deviceTable";
         }else {
             return "pageNotFound";
@@ -66,7 +65,7 @@ public class IotMapController {
         if(user==null){
             return "userNotFound";
         }
-        if("manager".equals(user.getRole())){
+        if(role_admin.equals(user.getRole())){
             return "datasourceTable";
         }else {
             return "pageNotFound";
@@ -80,7 +79,7 @@ public class IotMapController {
         if(user==null){
             return "userNotFound";
         }
-        if("manager".equals(user.getRole())){
+        if(role_admin.equals(user.getRole())){
             return "fingerTable";
         }else {
             return "pageNotFound";

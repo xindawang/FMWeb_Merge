@@ -86,4 +86,8 @@ public class RpEntity {
     }
 
     private Double y;
+
+    public String getLocString(){
+        return this.getX()+","+this.getY();
+    }
 }
