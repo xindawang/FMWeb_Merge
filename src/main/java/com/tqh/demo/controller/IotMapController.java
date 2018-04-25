@@ -40,7 +40,7 @@ public class IotMapController {
         if(user==null){
             return "login";
         }else {
-            return "hello_FengMap";
+            return "mapPage";
         }
     }
 

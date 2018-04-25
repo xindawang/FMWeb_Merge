@@ -22,7 +22,7 @@ window.onload = function () {
         // [200, 4000]， 自定义比例尺范围，单位（厘米）
         mapScaleRange: [1, 4000],
         // 默认自定义比例尺为 1：1000（厘米）
-        defaultMapScale: 110,
+        defaultMapScale: 140,
         //开发者申请应用下web服务的key
         key: '34a37f702ce7100a9043b5ef4d583500',
         //开发者申请应用名称
