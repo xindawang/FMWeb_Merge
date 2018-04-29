@@ -2,7 +2,6 @@ package com.tqh.demo.service;
 
 import com.tqh.demo.mapper.DatasourceMapper;
 import com.tqh.demo.model.BayesArgsEntity;
-import com.tqh.demo.model.Datasource;
 import com.tqh.demo.model.PointLocation;
 import com.tqh.demo.model.RpEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ public class KnnService {
     @Autowired
     DatasourceMapper datasourceMapper;
     @Autowired
-    PoinLocationService poinLocationService;
+    PointLocationService pointLocationService;
     private int apAmount=5;
     private int k = 3;
     public void getLocByKnn(RpEntity rpEntity, String tableName){
@@ -156,7 +155,7 @@ public class KnnService {
         PointLocation[] pointLocEntity = new PointLocation[k];
         int i = 0 ;
         for (RpEntity rpEntity :rpEntities) {
-            pointLocEntity[i++]=poinLocationService.getPointLocation(rpEntity.getPoint_name());
+            pointLocEntity[i++]= pointLocationService.getPointLocation(rpEntity.getPoint_name());
         }
         return pointLocEntity;
     }

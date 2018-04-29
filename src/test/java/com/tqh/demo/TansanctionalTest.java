@@ -1,13 +1,11 @@
 package com.tqh.demo;
 
-import com.tqh.demo.service.FingerPrintService;
-import com.tqh.demo.service.PoinLocationService;
+import com.tqh.demo.service.PointLocationService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 
@@ -16,7 +14,7 @@ import java.io.*;
 public class TansanctionalTest {
 
     @Autowired
-    PoinLocationService poinLocationService;
+    PointLocationService pointLocationService;
     @Test
     public void test(){
         File file=new File("F:/材料/实验室/数据 - 副本.txt");
@@ -36,7 +34,7 @@ public class TansanctionalTest {
                 int x=Integer.parseInt(strings[1].trim().substring(6,15).replace(".",""));
                 int y=Integer.parseInt(strings[2].trim().substring(6,15).replace(".",""));
 
-                     poinLocationService.insertPointLocation(point_name,x,y);
+                     pointLocationService.insertPointLocation(point_name,x,y);
                     line=bufferedReader.readLine();
                 }
 

@@ -4,8 +4,6 @@ public class PointLocation {
     private String point_name;
     private Integer x;
     private Integer y;
-    private Integer leftpx;
-    private Integer toppx;
 
     public Double getBayesResult() {
         return bayesResult;
@@ -39,21 +37,5 @@ public class PointLocation {
 
     public void setY(Integer y) {
         this.y = y;
-    }
-
-    public Integer getLeftpx() {
-        return leftpx;
-    }
-
-    public void setLeftpx(Integer leftpx) {
-        this.leftpx = leftpx;
-    }
-
-    public Integer getToppx() {
-        return toppx;
-    }
-
-    public void setToppx(Integer toppx) {
-        this.toppx = toppx;
     }
 }

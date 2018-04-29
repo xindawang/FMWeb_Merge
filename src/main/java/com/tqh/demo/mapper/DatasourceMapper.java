@@ -20,18 +20,10 @@ public interface DatasourceMapper {
             "(\n" +
             "  id int(11)NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" +
             "  point_name VARCHAR(5),\n" +
-            "  ap1_average DECIMAL(10,7),\n" +
-            "  ap2_average DECIMAL(10,7),\n" +
-            "  ap3_average DECIMAL(10,7),\n" +
-            "  ap4_average DECIMAL(10,7),\n" +
-            "  ap5_average DECIMAL(10,7),\n" +
-            "  ap1_variance DECIMAL(10,7),\n" +
-            "  ap2_variance DECIMAL(10,7),\n" +
-            "  ap3_variance DECIMAL(10,7),\n" +
-            "  ap4_variance DECIMAL(10,7),\n" +
-            "  ap5_variance DECIMAL(10,7)\n" +
+            "${apString}\n"+
             ")")
-    boolean createTable(@Param(value="upload_time") String upload_time);
+    boolean createTable(@Param(value="upload_time") String upload_time,
+                        @Param(value="apString") String apString);
 
     @Select("select count(id) from `${tableName}` where point_name = #{pointName}")
     boolean hasPoint(@Param("tableName") String tableName,@Param("pointName")String pointName);

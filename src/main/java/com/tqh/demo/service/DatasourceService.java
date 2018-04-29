@@ -2,6 +2,7 @@ package com.tqh.demo.service;
 
 import com.tqh.demo.mapper.DatasourceMapper;
 import com.tqh.demo.model.Datasource;
+import com.tqh.demo.util.FileTool;
 import com.tqh.demo.util.RssiTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,42 +17,124 @@ import java.util.List;
 
 @Service
 public class DatasourceService {
+
     @Autowired
     DatasourceMapper datasourceMapper;
+
+    private int apAmount=15;
+
     public List<Datasource> selectAll(){
         return datasourceMapper.selectAll();
     }
+
     public Datasource selectDatasource(int id){
         return  datasourceMapper.selectDatasource(id);
     }
+
     public boolean createTable(String upload_time) {
-            return datasourceMapper.createTable(upload_time);
+        String apString = "";
+        for (int i = 1; i <= apAmount; i++) {
+            apString = apString+"ap"+i+"_average DECIMAL(10,7),"
+                    +"ap"+i+"_variance DECIMAL(10,7)";
+            if (i<apAmount) apString += ",";
+        }
+            return datasourceMapper.createTable(upload_time,apString);
     }
     public boolean removeTable(String table_name) {
            return datasourceMapper.removeTable(table_name);
     }
 
-    private int apAmount=5;
     @Transactional(rollbackFor = Exception.class)
     public boolean InsertDataFromTxt(String tableName,String filename){
 
-        //      List<String> allPoints = pointLocMapper.getHorizontalPointName();//50个点
-        //A0-A49 50个点 每个采样19次,5个AP
         List<String> allPoints=new ArrayList<String>();
         for(int i=1;i<=50 ;i++){
             allPoints.add("A"+i);
         }
+        for(int i=51;i<=80 ;i++){
+            allPoints.add("B"+i);
+        }
+        for(int i=81;i<=105 ;i++){
+            allPoints.add("C"+i);
+        }
+
         int rpCurCount = 1;
         for (String str : allPoints) {
             for (int i = 1; i <= apAmount; i++) {
                 String apName = "ap"+i;
-                List<Double> eachApData = getApRssiOfRpFromTxt(filename,apName,rpCurCount,19);
+                List<Double> eachApData = getApRssiOfRpFromTxt(filename,apName,rpCurCount,100);
                 if (!computeAndInsertGaussArgs(tableName,eachApData,str,apName)) return false;
                 System.out.println(eachApData);
             }
             rpCurCount++;
         }
         return true;
+    }
+
+    public boolean getArgsFromDir(String tableName, String filename) {
+        List<String> allPoints=new ArrayList<String>();
+        for(int i=1;i<=50 ;i++){
+            allPoints.add("A"+i);
+        }
+        for(int i=51;i<=80 ;i++){
+            allPoints.add("B"+i);
+        }
+        for(int i=81;i<=105 ;i++){
+            allPoints.add("C"+i);
+        }
+        for(int i=106;i<=117 ;i++){
+            allPoints.add("D"+i);
+        }
+        for(int i=118;i<=129 ;i++){
+            allPoints.add("E"+i);
+        }
+        for(int i=130;i<=130 ;i++){
+            allPoints.add("F"+i);
+        }
+        List<String> fileList = FileTool.traverseFolder(filename);
+        int rpCurCount = 1;
+        for (String str : allPoints) {
+            for (int i = 1; i <= apAmount; i++) {
+                String apName = "ap"+i;
+//                List<Double> eachApData = rssiMapper.getEachApRssiByPointName(apName,str);
+                List<Double> eachApData = getApRssiOfRpFromTxt(fileList.get(rpCurCount-1),apName);
+                if (eachApData.isEmpty()) continue;
+                if (!computeAndInsertGaussArgs(tableName,eachApData,str,apName)) return false;
+//                System.out.println(eachApData);
+            }
+            rpCurCount++;
+        }
+        return true;
+    }
+
+    private List<Double> getApRssiOfRpFromTxt(String filename, String apName) {
+        List<Double> eachApData= new ArrayList<>();
+        try {
+            FileReader reader = new FileReader(filename);
+            BufferedReader br = new BufferedReader(reader);
+            br.readLine();
+            String str = br.readLine();
+            while (str != null) {
+                String[] eachRpSet = str.split(";");
+                for (int i = 0; i < eachRpSet.length; i++) {
+                    String[] eachAp = eachRpSet[i].split(" ");
+                    if (RssiTool.getNewName(eachAp[0]).equals(apName)){
+                        eachApData.add(Double.valueOf(eachAp[1]));
+                        break;
+                    }
+
+                }
+                br.readLine();
+                br.readLine();
+                str = br.readLine();
+            }
+            br.close();
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return eachApData;
     }
 
     public List<Double> getApRssiOfRpFromTxt(String filename,String apName, int rpCurCount,int repeatTimes){
