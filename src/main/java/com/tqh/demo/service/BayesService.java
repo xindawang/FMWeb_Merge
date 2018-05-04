@@ -17,11 +17,12 @@ public class BayesService {
     PointLocationMapper pointLocationMapper;
     @Autowired
     DatasourceMapper datasourceMapper;
-    private int apAmount = 5;
+    private int apAmount = 15;
 
     private int k = 3;
-    public void getLocByBayes(RpEntity rpEntity, String tableName){
+    public void getLocByBayes(RpEntity rpEntity, String tableName, int kAmount){
 
+        k = kAmount;
         //initialize the input data
         HashMap<String, Double> rpInfoSrc = rpEntity.getPoints();
 
@@ -41,8 +42,8 @@ public class BayesService {
         }
 
         //convert the format of location info according to how it store into database in knnService
-        double result_x = x/Math.pow(10,6) + 12735800;
-        double result_y = y/Math.pow(10,7) + 3569540;
+        double result_x = x/Math.pow(10,6) + 12735839;
+        double result_y = y/Math.pow(10,6) + 3569534;
         rpEntity.setX(result_x);
         rpEntity.setY(result_y);
     }
@@ -75,6 +76,7 @@ public class BayesService {
                     String avgName = "ap" + i + "_average";
                     String varName = "ap" + i + "_variance";
                     BayesArgsEntity eachAp = datasourceMapper.getEachApArgs(tableName,avgName, varName, pointName);
+                    if (eachAp == null) continue;
                     if (eachAp.getApNameVar() == 0){
                         eachAp.setApNameVar(0.000001);
                     }

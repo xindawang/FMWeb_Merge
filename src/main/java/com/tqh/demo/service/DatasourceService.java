@@ -45,33 +45,7 @@ public class DatasourceService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public boolean InsertDataFromTxt(String tableName,String filename){
-
-        List<String> allPoints=new ArrayList<String>();
-        for(int i=1;i<=50 ;i++){
-            allPoints.add("A"+i);
-        }
-        for(int i=51;i<=80 ;i++){
-            allPoints.add("B"+i);
-        }
-        for(int i=81;i<=105 ;i++){
-            allPoints.add("C"+i);
-        }
-
-        int rpCurCount = 1;
-        for (String str : allPoints) {
-            for (int i = 1; i <= apAmount; i++) {
-                String apName = "ap"+i;
-                List<Double> eachApData = getApRssiOfRpFromTxt(filename,apName,rpCurCount,100);
-                if (!computeAndInsertGaussArgs(tableName,eachApData,str,apName)) return false;
-                System.out.println(eachApData);
-            }
-            rpCurCount++;
-        }
-        return true;
-    }
-
-    public boolean getArgsFromDir(String tableName, String filename) {
+    public boolean insertDataFromTxt(String tableName, String filename) {
         List<String> allPoints=new ArrayList<String>();
         for(int i=1;i<=50 ;i++){
             allPoints.add("A"+i);
@@ -96,8 +70,8 @@ public class DatasourceService {
         for (String str : allPoints) {
             for (int i = 1; i <= apAmount; i++) {
                 String apName = "ap"+i;
-//                List<Double> eachApData = rssiMapper.getEachApRssiByPointName(apName,str);
-                List<Double> eachApData = getApRssiOfRpFromTxt(fileList.get(rpCurCount-1),apName);
+                List<String> eachPointData = getRssiFromTxt(fileList.get(rpCurCount-1),1,80);
+                List<Double> eachApData =  getApRssiOfRpFromTxt(eachPointData,apName);
                 if (eachApData.isEmpty()) continue;
                 if (!computeAndInsertGaussArgs(tableName,eachApData,str,apName)) return false;
 //                System.out.println(eachApData);
@@ -107,26 +81,26 @@ public class DatasourceService {
         return true;
     }
 
-    private List<Double> getApRssiOfRpFromTxt(String filename, String apName) {
-        List<Double> eachApData= new ArrayList<>();
+    public List<String> getRssiFromTxt(String filename, int stNum, int edNum){
+        List<String> eachPointData= new ArrayList<>();
         try {
             FileReader reader = new FileReader(filename);
             BufferedReader br = new BufferedReader(reader);
             br.readLine();
             String str = br.readLine();
-            while (str != null) {
-                String[] eachRpSet = str.split(";");
-                for (int i = 0; i < eachRpSet.length; i++) {
-                    String[] eachAp = eachRpSet[i].split(" ");
-                    if (RssiTool.getNewName(eachAp[0]).equals(apName)){
-                        eachApData.add(Double.valueOf(eachAp[1]));
-                        break;
-                    }
-
-                }
+            int curNum = 1;
+            while (curNum<stNum && str !=null){
+                br.readLine();
+                br.readLine();
+                br.readLine();
+                curNum++;
+            }
+            while (curNum <= edNum && str != null) {
+                eachPointData.add(str);
                 br.readLine();
                 br.readLine();
                 str = br.readLine();
+                curNum++;
             }
             br.close();
         } catch (FileNotFoundException ex) {
@@ -134,45 +108,25 @@ public class DatasourceService {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        return eachApData;
+        return eachPointData;
     }
 
-    public List<Double> getApRssiOfRpFromTxt(String filename,String apName, int rpCurCount,int repeatTimes){
-
+    public List<Double> getApRssiOfRpFromTxt(List<String> eachPointData, String apName) {
         List<Double> eachApData= new ArrayList<>();
-        try {
-            FileReader reader = new FileReader(filename);
-            BufferedReader br = new BufferedReader(reader);
-            String str = br.readLine();
-            int count = 0;
-            while (str != null) {
-                int rpTextCount = count/repeatTimes;
-                if (rpTextCount == rpCurCount -1) {
-                    String[] eachRpSet = str.split(";");
-                    for (int i = 0; i < eachRpSet.length; i++) {
-                        String[] eachAp = eachRpSet[i].split(" ");
-                        if (RssiTool.getNewName(eachAp[0]).equals(apName)){
-                            eachApData.add(Double.valueOf(eachAp[1]));
-                            break;
-                        }
-
-                    }
+        for(String str : eachPointData) {
+            String[] eachRpSet = str.split(";");
+            for (int i = 0; i < eachRpSet.length; i++) {
+                String[] eachAp = eachRpSet[i].split(" ");
+                if (RssiTool.getNewName(eachAp[0]).equals(apName)) {
+                    eachApData.add(Double.valueOf(eachAp[1]));
+                    break;
                 }
-                str = br.readLine();
-                count++;
+
             }
-            br.close();
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
         return eachApData;
     }
 
-    /**
-    *计算这19个点的均值和方差并插入数据库
-     */
     private boolean computeAndInsertGaussArgs(String tableName, List<Double> eachApData, String pointName, String apName) {
         double sum = 0.0, variance = 0.0;
         for (Double eachResult : eachApData)

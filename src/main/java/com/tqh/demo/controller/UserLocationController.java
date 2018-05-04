@@ -31,7 +31,7 @@ public class UserLocationController {
     private KnnService knnService;
 
     @Autowired
-    private BayesService naiveBayesService;
+    private BayesService bayesService;
 
     @RequestMapping("/selectAllUserLocation")
     @ResponseBody
@@ -53,15 +53,15 @@ public class UserLocationController {
         RpEntity rpEntity = new RpEntity();
         HashMap<String,Double> apentities = new HashMap<>();
         String algorithm = jsonParam.getString("algorithm");
-        for (String key : jsonParam.keySet()){
+         for (String key : jsonParam.keySet()){
             if (key.contains("ap")) apentities.put(key,Double.parseDouble(jsonParam.getString(key)));
         }
         rpEntity.setPoints(apentities);
         if (algorithm!=null) {
             if (algorithm.equals("knn")) {
-                knnService.getLocByKnn(rpEntity,null);
-            }else if (algorithm=="bayes") {
-                naiveBayesService.getLocByBayes(rpEntity,null);
+                knnService.getLocByKnn(rpEntity,"1_2018-04-27-17:11:51",1);
+            }else if (algorithm.equals("bayes")) {
+                bayesService.getLocByBayes(rpEntity,"1_2018-04-27-17:11:51",3);
             }
         }else{
             return null;

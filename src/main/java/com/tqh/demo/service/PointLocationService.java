@@ -21,6 +21,8 @@ public class PointLocationService {
     @Autowired
     PointLocationMapper pointLocationMapper;
 
+    PointLocationService pointLocationService;
+
     private int pointCount =1;
 
     public void insertPointLocation(String point_name,int x,int y){
@@ -47,6 +49,50 @@ public class PointLocationService {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void setPointLoc(){
+        //x-12735839,y-3569534
+        //5.3/5.58m*1000000
+
+        String areaName = "A";
+        double width = 8.93;
+        double height = 3.8;
+        List<Integer> horizontal = new ArrayList<>((Arrays.asList(100, 83, 83, 67, 83, 83, 83, 68,83,83,100)));
+        List<Integer> vertical = new ArrayList<>((Arrays.asList(20, 83, 83, 83, 83,20)));
+        pointLocationService.setPointLoc(areaName, width, height, 6.7006,8.2467,horizontal, vertical);
+
+        areaName = "B";
+        width = 21.6;
+        height = 1.6;
+        horizontal = new ArrayList<>((Arrays.asList(21, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140,234)));
+        vertical = new ArrayList<>((Arrays.asList(21, 140, 21)));
+        pointLocationService.setPointLoc(areaName, width, height, 0.0508,6.4469,horizontal, vertical);
+
+        areaName = "C";
+        width = 4.16;
+        height = 3.8;
+        horizontal = new ArrayList<>((Arrays.asList(44, 88, 88, 88,88,1)));
+        vertical = new ArrayList<>((Arrays.asList(54, 88, 88, 88, 88,28)));
+        pointLocationService.setPointLoc(areaName, width, height, 21.8510,8.2467,horizontal, vertical);
+
+        areaName = "D";
+        width = 3.52;
+        height = 5.3;
+        horizontal = new ArrayList<>((Arrays.asList(72, 107, 107, 78)));
+        vertical = new ArrayList<>((Arrays.asList(120, 120, 120, 120, 78)));
+        pointLocationService.setPointLoc(areaName, width, height, 6.5709,0.9463,horizontal, vertical);
+
+        areaName = "E";
+        width = 2.91;
+        height = 5.3;
+        horizontal = new ArrayList<>((Arrays.asList(78, 107, 107, 90)));
+        vertical = new ArrayList<>((Arrays.asList(70, 120, 120, 120, 128)));
+        pointLocationService.setPointLoc(areaName, width, height, 10.2902,0.9464,horizontal, vertical);
+
+        int x = (int)(10.05083*1000000);
+        int y = (int)(4.5803*1000000);
+        System.out.println("E130 "+x+" "+y);
     }
 
     public void setPointLoc(String areaName, double width, double height,

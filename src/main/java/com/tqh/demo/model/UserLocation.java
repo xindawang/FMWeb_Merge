@@ -1,19 +1,13 @@
 package com.tqh.demo.model;
 
+import java.sql.Date;
+
 public class UserLocation {
     private String device;
-    private String x;
-    private String y;
-    private String saveTime;
+    private Double x;
+    private Double y;
+    private Date saveTime;
     private int no;
-
-    public int getNo() {
-        return no;
-    }
-
-    public void setNo(int no) {
-        this.no = no;
-    }
 
     public String getDevice() {
         return device;
@@ -23,27 +17,35 @@ public class UserLocation {
         this.device = device;
     }
 
-    public String getX() {
+    public Double getX() {
         return x;
     }
 
-    public void setX(String x) {
+    public void setX(Double x) {
         this.x = x;
     }
 
-    public String getY() {
+    public Double getY() {
         return y;
     }
 
-    public void setY(String y) {
+    public void setY(Double y) {
         this.y = y;
     }
 
-    public String getSaveTime() {
+    public Date getSaveTime() {
         return saveTime;
     }
 
-    public void setSaveTime(String saveTime) {
+    public void setSaveTime(Date saveTime) {
         this.saveTime = saveTime;
+    }
+
+    public int getNo() {
+        return no;
+    }
+
+    public void setNo(int no) {
+        this.no = no;
     }
 }

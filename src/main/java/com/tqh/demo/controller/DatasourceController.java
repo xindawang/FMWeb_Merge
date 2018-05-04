@@ -47,7 +47,7 @@ public class DatasourceController {
             String upload_time=id+datasource.getUpload_time();
             String data_path=datasource.getData_path();
             datasourceService.createTable(upload_time);
-            datasourceService.InsertDataFromTxt(upload_time,data_path);
+            datasourceService.insertDataFromTxt(upload_time,data_path);
             fingerPrintService.insertFinger(upload_time);
             return  true;
     }

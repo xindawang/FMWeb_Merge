@@ -17,9 +17,11 @@ public class KnnService {
     DatasourceMapper datasourceMapper;
     @Autowired
     PointLocationService pointLocationService;
-    private int apAmount=5;
+    private int apAmount=15;
     private int k = 3;
-    public void getLocByKnn(RpEntity rpEntity, String tableName){
+    public void getLocByKnn(RpEntity rpEntity, String tableName, int kAmount){
+
+        k = kAmount;
 
         //appoint the number of minimum AP point
 
@@ -56,8 +58,8 @@ public class KnnService {
             }
         }
         //convert the format of location info according to how it store into database
-        double result_x = x/Math.pow(10,6) + 12735800;
-        double result_y = y/Math.pow(10,7) + 3569540;
+        double result_x = x/Math.pow(10,6) + 12735839;
+        double result_y = y/Math.pow(10,6) + 3569534;
         rpEntity.setX(result_x);
         rpEntity.setY(result_y);
 //        rpEntity.setLeftpx((int)Math.round(x));
@@ -77,6 +79,7 @@ public class KnnService {
                 String apName =  "ap" + i;
                 String avgName = "ap" + i + "_average";
                 BayesArgsEntity eachAp = datasourceMapper.getEachApAvg(tableName,avgName, pointName);
+                if (eachAp!=null)
                 apEntities.put(apName,eachAp.getApNameAvg());
             }
             rpEntity.setPoints(apEntities);
