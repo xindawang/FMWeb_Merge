@@ -11,6 +11,7 @@ import com.tqh.demo.service.BayesService;
 import com.tqh.demo.service.KnnService;
 import com.tqh.demo.service.UserLocationService;
 import com.tqh.demo.util.JsonTool;
+import com.tqh.demo.util.RssiTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,7 +55,7 @@ public class UserLocationController {
         HashMap<String,Double> apentities = new HashMap<>();
         String algorithm = jsonParam.getString("algorithm");
          for (String key : jsonParam.keySet()){
-            if (key.contains("ap")) apentities.put(key,Double.parseDouble(jsonParam.getString(key)));
+            if (RssiTool.getNameChangeMap().containsKey(key)) apentities.put(key,Double.parseDouble(jsonParam.getString(key)));
         }
         rpEntity.setPoints(apentities);
         if (algorithm!=null) {

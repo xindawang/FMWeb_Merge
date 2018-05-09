@@ -4,6 +4,7 @@ import com.tqh.demo.mapper.DatasourceMapper;
 import com.tqh.demo.model.BayesArgsEntity;
 import com.tqh.demo.model.PointLocation;
 import com.tqh.demo.model.RpEntity;
+import com.tqh.demo.util.RssiTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,8 @@ public class KnnService {
 
         k = kAmount;
 
-        //appoint the number of minimum AP point
+        //appoint the number of chosen AP point
+//        rpEntity.setPoints(RssiTool.getNBiggestMap(rpEntity.getPoints(),10));
 
         //get from database
         List<RpEntity> rpList = getRssiEntityFromDatabase(tableName);

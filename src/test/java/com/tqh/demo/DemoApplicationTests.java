@@ -1,11 +1,9 @@
 package com.tqh.demo;
 
+import com.tqh.demo.model.KMeansEntity;
 import com.tqh.demo.model.PointLocation;
 import com.tqh.demo.model.RpEntity;
-import com.tqh.demo.service.BayesService;
-import com.tqh.demo.service.DatasourceService;
-import com.tqh.demo.service.KnnService;
-import com.tqh.demo.service.PointLocationService;
+import com.tqh.demo.service.*;
 import com.tqh.demo.util.FileTool;
 import com.tqh.demo.util.RssiTool;
 import org.junit.Test;
@@ -28,6 +26,8 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class DemoApplicationTests {
+	@Autowired
+	KMeansService kMeansService;
 
 	@Autowired
 	DatasourceService datasourceService;
@@ -47,63 +47,61 @@ public class DemoApplicationTests {
 		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 		String recordDate = sDateFormat.format(new java.util.Date());
 		datasourceService.createTable(diviceId+"_"+recordDate);
+		kMeansService.createCoreTable(diviceId+"_"+recordDate+"_core");
+		kMeansService.createTypeTable(diviceId+"_"+recordDate+"_type");
 	}
 
 	@Test
 	public void insertData(){
-		String filename = "E:\\tablet_mi\\mi";
-		datasourceService.insertDataFromTxt("2_2018-05-03-18:58:35",filename);
+		String filename = "E:\\tablet_mi\\tablet";
+//		datasourceService.insertDataFromTxt("1_2018-04-27-17:11:51",filename);
+		String coreFilename = "E:\\tablet_mi\\tabletCore.txt";
+		kMeansService.insertCoreFromTxt("1_2018-04-27-17:11:51_core",coreFilename);
+		String typeFilename = "E:\\tablet_mi\\tabletType.txt";
+		kMeansService.insertTypeFromTxt("1_2018-04-27-17:11:51_type",typeFilename);
 	}
 
-	@Test
-	public void getLoc(){
-//		String rssi = "MERCURY_BD09 -75;Xiaomi_31CB_CE34 -56;MERCURY_B932 -51;abc3 -83;abc6 -57;abc8 -62;abc7 -65;Xiaomi_3525_CADA -34;abc4 -61;";
-		String rssi = "\n" +
-				"abc8 -39;MERCURY_CFF9 -69;MERCURY_B932 -62;abc7 -35;MERCURY_BD09 -64;Xiaomi_3525_CADA -47;abc4 -45;abc3 -53;Xiaomi_31CB_CE34 -61;abc6 -33;abc2 -67;";
+	public RpEntity getTestRpEntity(){
+		String rssi = "TP-LINK_115D -58;Xiaomi_3525_CADA -55;abc3 -61;MERCURY_BD09 -66;abc2 -62;abc7 -45;MERCURY_CFF9 -67;Xiaomi_31CB_CE34 -67;abc6 -38;abc4 -36;MERCURY_B932 -71;TP-LINK_1646 -61;TP-LINK_0236 -35;TP-LINK_3E5D -65;abc8 -43;";
+//		String rssi = "abc6 -32;abc7 -34;abc4 -47;Xiaomi_31CB_CE34 -61;MERCURY_B932 -59;Xiaomi_3525_CADA -47;abc2 -68;abc3 -55;abc8 -43;";
 		RpEntity rpEntity = new RpEntity();
 		HashMap<String,Double> apentities = new HashMap<>();
 		String[] eachRpSet = rssi.split(";");
 		for (int i = 0; i < eachRpSet.length; i++) {
 			String[] eachAp = eachRpSet[i].split(" ");
-			apentities.put(RssiTool.getNewName(eachAp[0]),Double.valueOf(eachAp[1]));
+			if (RssiTool.getNameChangeMap().containsKey(eachAp[0]))
+				apentities.put(RssiTool.getNewName(eachAp[0]),Double.valueOf(eachAp[1]));
 		}
 		rpEntity.setPoints(apentities);
-		knnService.getLocByKnn(rpEntity,"1_2018-05-02-20:49:06",1);
+		return rpEntity;
+	}
+
+	@Test
+	public void getLoc(){
+		RpEntity rpEntity = getTestRpEntity();
+		bayesService.getLocByBayes(rpEntity,"1_2018-04-27-17:11:51",3);
 		System.out.println(rpEntity.getLocString());
 	}
 
+	@Test
+	public void getKMeansResult(){
+		RpEntity rpEntity = getTestRpEntity();
+		kMeansService.getRpKmeansGroupNum(rpEntity);
+	}
 
 	@Test
 	public void getPrecision(){
-		List<String> allPoints=new ArrayList<String>();
-		for(int i=1;i<=50 ;i++){
-			allPoints.add("A"+i);
-		}
-		for(int i=51;i<=80 ;i++){
-			allPoints.add("B"+i);
-		}
-		for(int i=81;i<=105 ;i++){
-			allPoints.add("C"+i);
-		}
-		for(int i=106;i<=117 ;i++){
-			allPoints.add("D"+i);
-		}
-		for(int i=118;i<=129 ;i++){
-			allPoints.add("E"+i);
-		}
-		for(int i=130;i<=130 ;i++){
-			allPoints.add("F"+i);
-		}
-		String filename = "E:\\tablet_mi\\mi";
+		String filename = "E:\\tablet_mi_test\\mi";
 		List<String> fileList = FileTool.traverseFolder(filename);
+		List<String> locStrings = getCNNPointLoc();
 		int rpCurCount = 1;
 		double dif_x = 0;
 		double dif_y = 0;
 		double difSum_x = 0;
 		double difSum_y = 0;
 		int count = 1;
-		for (int j = 0; j < 130; j++){
-			List<String> eachPointData = datasourceService.getRssiFromTxt(fileList.get(rpCurCount-1),91,100);
+		for (int j = 0; j < fileList.size(); j++){
+			List<String> eachPointData = datasourceService.getRssiFromTxt(fileList.get(rpCurCount-1),1,20);
 			System.out.println(fileList.get(rpCurCount-1));
 			int curFileCount=1;
 			for(String str : eachPointData){
@@ -112,15 +110,16 @@ public class DemoApplicationTests {
 				String[] eachRpSet = str.split(";");
 				for (int i = 0; i < eachRpSet.length; i++) {
 					String[] eachAp = eachRpSet[i].split(" ");
+					if (RssiTool.getNameChangeMap().containsKey(eachAp[0]))
 					apentities.put(RssiTool.getNewName(eachAp[0]),Double.valueOf(eachAp[1]));
 				}
 				rpEntity.setPoints(apentities);
 //				knnService.getLocByKnn(rpEntity,"1_2018-05-03-14:37:33",5);
-				knnService.getLocByKnn(rpEntity,"2_2018-05-03-18:58:35",1);
-				PointLocation pointLocation = pointLocationService.getPointLocation(allPoints.get(j));
-				dif_x = Math.abs((rpEntity.getX() - 12735839)*Math.pow(10,6)-pointLocation.getX());
-				dif_y = Math.abs((rpEntity.getY()-3569534)*Math.pow(10,6)-pointLocation.getY());
-				System.out.println(count +" " +curFileCount + " " +dif_x+" "+dif_y);
+				bayesService.getLocByBayes(rpEntity,"1_2018-04-27-17:11:51",5);
+				String [] locxy = locStrings.get(j).split(" ");
+				dif_x = Math.abs((rpEntity.getX() - 12735839)*Math.pow(10,6)-Integer.valueOf(locxy[0]));
+				dif_y = Math.abs((rpEntity.getY()-3569534)*Math.pow(10,6)-Integer.valueOf(locxy[1]));
+				System.out.println(count +" " +curFileCount + " " +dif_x/Math.pow(10,6)+" "+dif_y/Math.pow(10,6));
 				count++;
 				curFileCount++;
 				difSum_x+=dif_x;
@@ -128,8 +127,8 @@ public class DemoApplicationTests {
 			}
 			rpCurCount++;
 		}
-		System.out.println((int)(difSum_x/1300)/Math.pow(10,6));
-		System.out.println((int)(difSum_y/1300)/Math.pow(10,6));
+		System.out.println((int)(difSum_x/20/34)/Math.pow(10,6));
+		System.out.println((int)(difSum_y/20/34)/Math.pow(10,6));
 	}
 
 	@Test
@@ -147,8 +146,66 @@ public class DemoApplicationTests {
 	}
 
 	@Test
+	public void setCNNPointLoc() {
+
+		for (int i = 1; i <=5; i++) {
+			System.out.print(i+ " ");
+			System.out.println(22312057 + (i-1)*922116 + " " +8976347);
+		}
+		for (int i = 6; i <=10; i++) {
+			System.out.print(i+ " ");
+			System.out.println(26000521 - (i-6)*922116 + " " +11544702);
+		}
+
+		System.out.println(11 +" " + 8484650 + " " +9722775);
+		System.out.println(12 +" " + 8484650 + " " +10994549);
+		System.out.println(13 +" " + 9293809 + " " +9722775);
+		System.out.println(14 +" " + 9293809 + " " +10994549);
+
+		System.out.println(15 +" " + 9946986 + " " +9722775);
+		System.out.println(16 +" " + 9946986 + " " +10570625);
+		System.out.println(17 +" " + 10756145 + " " +9722775);
+		System.out.println(18 +" " + 10756145 + " " +10570625);
+
+		System.out.println(19 +" " + 11565305 + " " +10146700);
+		System.out.println(20 +" " + 11565305 + " " +10994549);
+		System.out.println(21 +" " + 12374464 + " " +10146700);
+		System.out.println(22 +" " + 13037390 + " " +10146700);
+
+		int flag =0;
+		for (int i = 23; i <= 34; i++) {
+			System.out.print(i+ " ");
+			flag = i%2;
+			if (flag == 1) System.out.println(1620822 + (i-23)*1365237 + " " +6631515);
+			else System.out.println(2986059 + (i-24)*1365237 + " " +7246899);
+		}
+	}
+
+	public List<String> getCNNPointLoc(){
+		String filename = "E:\\tablet_mi_test\\Test_Location.txt";
+		List<String> locStrings = new ArrayList<>();
+		try {
+			FileReader reader = new FileReader(filename);
+			BufferedReader br = new BufferedReader(reader);
+			String str = br.readLine();
+			while (str != null) {
+				String[] eachRpSet = str.split(" ");
+				locStrings.add(eachRpSet[1]+" "+eachRpSet[2]);
+				str = br.readLine();
+			}
+			br.close();
+		} catch (FileNotFoundException ex) {
+			ex.printStackTrace();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		return locStrings;
+	}
+
+	@Test
 	public void getCnnSrc(){
-		String filename = "E:\\tablet_mi\\tablet";
+		String filename = "E:\\tablet_mi_test\\tablet";
+		List<String> locStrings = getCNNPointLoc();
 		List<String> fileList = FileTool.traverseFolder(filename);
 		HashMap<String,String> newName =  RssiTool.getCNNNameChangeMap();
 
@@ -170,7 +227,7 @@ public class DemoApplicationTests {
 						if (rss.containsKey(name)) System.out.print(rss.get(name)+" ");
 						else System.out.print(0+" ");
 					}
-					System.out.println(curFile);
+					System.out.println(locStrings.get(curFile));
 					br.readLine();
 					br.readLine();
 					str = br.readLine();
@@ -184,6 +241,11 @@ public class DemoApplicationTests {
 			}
 		}
 
+	}
+
+	@Test
+	public void startClustering(){
+		kMeansService.startClustering("1_2018-04-27-17:11:51");
 	}
 
 }

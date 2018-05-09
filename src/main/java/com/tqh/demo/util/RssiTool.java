@@ -7,10 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by ACER on 2018/3/8.
@@ -63,10 +60,10 @@ public class RssiTool {
         changeName.put("abc6", "ap4");
         changeName.put("abc7", "ap5");
         changeName.put("abc8", "ap6");
-        changeName.put("TP-LINK_0236", "ap7");
-        changeName.put("TP-LINK_3E5D", "ap8");
-        changeName.put("TP-LINK_115D", "ap9");
-        changeName.put("TP-LINK_1646", "ap10");
+//        changeName.put("TP-LINK_0236", "ap7");
+//        changeName.put("TP-LINK_3E5D", "ap8");
+//        changeName.put("TP-LINK_115D", "ap9");
+//        changeName.put("TP-LINK_1646", "ap10");
         changeName.put("Xiaomi_3525_CADA", "ap11");
         changeName.put("Xiaomi_31CB_CE34", "ap12");
         changeName.put("MERCURY_CFF9", "ap13");
@@ -83,10 +80,10 @@ public class RssiTool {
         changeName.put("abc6", "ap4");
         changeName.put("abc7", "ap5");
         changeName.put("abc8", "ap6");
-        changeName.put("TP-LINK_0236", "ap7");
-        changeName.put("TP-LINK_3E5D", "ap8");
-        changeName.put("TP-LINK_115D", "ap9");
-        changeName.put("TP-LINK_1646", "ap10");
+//        changeName.put("TP-LINK_0236", "ap7");
+//        changeName.put("TP-LINK_3E5D", "ap8");
+//        changeName.put("TP-LINK_115D", "ap9");
+//        changeName.put("TP-LINK_1646", "ap10");
         changeName.put("Xiaomi_3525_CADA", "ap11");
         changeName.put("Xiaomi_31CB_CE34", "ap12");
         changeName.put("MERCURY_CFF9", "ap13");
@@ -115,5 +112,21 @@ public class RssiTool {
         return changeName;
     }
 
+    public static HashMap<String, Double> getNBiggestMap(HashMap<String, Double> map , int n){
+        if (n>map.size())return map;
+        HashMap<String, Double> resultMap = new HashMap<>();
+        List<Map.Entry<String,Double>> list = new ArrayList<Map.Entry<String,Double>>(map.entrySet());
+        Collections.sort(list,new Comparator<Map.Entry<String,Double>>() {
+            //升序排序
+            public int compare(Map.Entry<String, Double> o1,
+                               Map.Entry<String, Double> o2) {
+                return o2.getValue().compareTo(o1.getValue());
+            }
 
+        });
+        for (int i = 0; i < n; i++) {
+            resultMap.put(list.get(i).getKey(),list.get(i).getValue());
+        }
+        return resultMap;
+    }
 }

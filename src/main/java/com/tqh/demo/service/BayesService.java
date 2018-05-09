@@ -5,6 +5,7 @@ import com.tqh.demo.mapper.PointLocationMapper;
 import com.tqh.demo.model.BayesArgsEntity;
 import com.tqh.demo.model.PointLocation;
 import com.tqh.demo.model.RpEntity;
+import com.tqh.demo.util.RssiTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +25,12 @@ public class BayesService {
 
         k = kAmount;
         //initialize the input data
+//        HashMap<String, Double> rpInfoSrc = RssiTool.getNBiggestMap(rpEntity.getPoints(),7);
         HashMap<String, Double> rpInfoSrc = rpEntity.getPoints();
 
+
         //get ratio and location info of each point and add up for the result
-        PointLocation[] maxKEntities = getKPointsWithHighestProb(tableName,rpInfoSrc,1,50);
+        PointLocation[] maxKEntities = getKPointsWithHighestProb(tableName,rpInfoSrc);
 
 
         double sum = 0,x=0,y=0;
@@ -48,8 +51,7 @@ public class BayesService {
         rpEntity.setY(result_y);
     }
 
-    private PointLocation[] getKPointsWithHighestProb(String tableName, HashMap<String, Double> rpInfoSrc,
-                                                       int startCount, int endCount){
+    private PointLocation[] getKPointsWithHighestProb(String tableName, HashMap<String, Double> rpInfoSrc){
 
         //use the way of priority queue, which could be compared to the knn
         Comparator<PointLocation> cmp = new Comparator<PointLocation>() {
@@ -63,35 +65,31 @@ public class BayesService {
         PointLocation[] pointLocEntities = new PointLocation[k];
         List<String> allPointNames = datasourceMapper.getAllPointName(tableName);
 
-        int count =1;
         //calculate the probability of each candidate point, pick the max k
         for (String pointName : allPointNames) {
-            if (count>=startCount&&count<=endCount) {
-                PointLocation candidateLocEntity = new PointLocation();
-                double eachPointProb = 1.0;
+            PointLocation candidateLocEntity = new PointLocation();
+            double eachPointProb = 1.0;
 
-                //put the online data into Gauss formula with Gauss index of each ap
-                for (int i = 1; i <= apAmount; i++) {
-                    String apName = "ap" + i;
-                    String avgName = "ap" + i + "_average";
-                    String varName = "ap" + i + "_variance";
-                    BayesArgsEntity eachAp = datasourceMapper.getEachApArgs(tableName,avgName, varName, pointName);
-                    if (eachAp == null) continue;
-                    if (eachAp.getApNameVar() == 0){
-                        eachAp.setApNameVar(0.000001);
-                    }
-                    //handle the situation when apX is not found
-                    double thisApProb = 1;
-                    if (rpInfoSrc.get(apName)!=null){
-                        thisApProb = 1 / Math.sqrt(2 * Math.PI * eachAp.getApNameVar()) * Math.pow(E, -Math.pow(rpInfoSrc.get(apName) - eachAp.getApNameAvg(), 2) / (2 * eachAp.getApNameVar()));
-                    }
-                    eachPointProb *= thisApProb;
+            //put the online data into Gauss formula with Gauss index of each ap
+            for (int i = 1; i <= apAmount; i++) {
+                String apName = "ap" + i;
+                String avgName = "ap" + i + "_average";
+                String varName = "ap" + i + "_variance";
+                BayesArgsEntity eachAp = datasourceMapper.getEachApArgs(tableName,avgName, varName, pointName);
+                if (eachAp == null) continue;
+                if (eachAp.getApNameVar() == 0){
+                    eachAp.setApNameVar(0.000001);
                 }
-                candidateLocEntity.setPoint_name(pointName);
-                candidateLocEntity.setBayesResult(eachPointProb);
-                maxKPoints.offer(candidateLocEntity);
+                //handle the situation when apX is not found
+                double thisApProb = 1;
+                if (rpInfoSrc.get(apName)!=null){
+                    thisApProb = 1 / Math.sqrt(2 * Math.PI * eachAp.getApNameVar()) * Math.pow(E, -Math.pow(rpInfoSrc.get(apName) - eachAp.getApNameAvg(), 2) / (2 * eachAp.getApNameVar()));
+                }
+                eachPointProb *= thisApProb;
             }
-            count++;
+            candidateLocEntity.setPoint_name(pointName);
+            candidateLocEntity.setBayesResult(eachPointProb);
+            maxKPoints.offer(candidateLocEntity);
         }
         for (int i = 0; i < k; i++){
             pointLocEntities[i] = maxKPoints.poll();
