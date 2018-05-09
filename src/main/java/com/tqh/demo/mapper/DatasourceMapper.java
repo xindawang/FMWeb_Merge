@@ -44,6 +44,10 @@ public interface DatasourceMapper {
     @Select("select ${apNameAvg} as apNameAvg from `${tableName}` where point_name = #{pointName}")
     BayesArgsEntity getEachApAvg(@Param("tableName") String tableName, @Param("apNameAvg") String apNameAvg, @Param("pointName") String pointName);
 
+
+    @Select("select point_name from `${tableName}` where id = #{id}")
+    String getPointNameById(@Param("tableName") String tableName, @Param("id") int id);
+
     @Insert("insert into `${tableName}` (point_name,${apNameAvg},${apNameVar}) "
             +"values (#{pointName},#{apAvg},#{apVar})")
     boolean insertAvrAndVar(@Param("tableName") String tableName,@Param("apNameAvg") String apNameAvg, @Param("apNameVar") String apNameVar,

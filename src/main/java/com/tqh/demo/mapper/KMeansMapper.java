@@ -16,6 +16,7 @@ public interface KMeansMapper {
     @Update("CREATE TABLE `${upload_time}`\n" +
             "(\n" +
             "  fingerprint_id int(11),\n" +
+            "  fingerprint_name varchar(5),\n" +
             "  type int(11)\n" +
             ")")
     boolean createTypeTable(@Param(value="upload_time") String upload_time);
@@ -28,9 +29,10 @@ public interface KMeansMapper {
     boolean createCoreTable(@Param(value="upload_time") String upload_time,
                         @Param(value="apString") String apString);
 
-    @Insert("  INSERT INTO `${table_name}` (fingerprint_id,type) VALUES (#{fingerprint_id},#{type})")
+    @Insert("  INSERT INTO `${table_name}` (fingerprint_id,fingerprint_name,type) VALUES (#{fingerprint_id},#{fingerprint_name},#{type})")
     void insertType(@Param(value="table_name") String table_name,
                     @Param(value = "fingerprint_id") int fingerprint_id,
+                    @Param(value = "fingerprint_name") String fingerprint_name,
                              @Param(value = "type") double type);
 
     @Insert("update `${tableName}` set ${apNameAvg}=#{apAvg} where id = #{id}" )
@@ -47,4 +49,8 @@ public interface KMeansMapper {
     @Select("select ${apNameAvg} as apNameAvg from `${tableName}` where id = #{id}")
     BayesArgsEntity getEachApArgs(@Param("tableName") String tableName, @Param("apNameAvg") String apNameAvg,
                                   @Param("id") int id);
+
+    @Select("select fingerprint_name from `${tableName}` where type = #{type}")
+    List<String> getPointNameByCoreNum(@Param("tableName") String tableName,
+                                      @Param("type") int type);
 }

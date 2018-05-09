@@ -189,10 +189,10 @@ public class KMeansService {
             int count =0;
             while (str != null) {
                 String[] eachAp = str.split(";");
-                kMeansMapper.insertCoreIndex(tableName,count);
+                kMeansMapper.insertCoreIndex(tableName+"_core",count);
                 for (String apInfo : eachAp){
                     String[] eachApRss = apInfo.split(" ");
-                    kMeansMapper.insertCore(tableName,count,eachApRss[0],Double.parseDouble(eachApRss[1]));
+                    kMeansMapper.insertCore(tableName+"_core",count,eachApRss[0],Double.parseDouble(eachApRss[1]));
                 }
                 count++;
                 str = br.readLine();
@@ -213,7 +213,9 @@ public class KMeansService {
             String str = br.readLine();
             int count =1;
             while (str != null) {
-                kMeansMapper.insertType(tableName,count++,Double.parseDouble(str));
+                String fingerprint_name = datasourceMapper.getPointNameById(tableName,count);
+                kMeansMapper.insertType(tableName+"_type",count,fingerprint_name,Double.parseDouble(str));
+                count++;
                 str = br.readLine();
             }
             br.close();

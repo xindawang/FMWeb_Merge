@@ -1,6 +1,7 @@
 package com.tqh.demo.service;
 
 import com.tqh.demo.mapper.DatasourceMapper;
+import com.tqh.demo.mapper.KMeansMapper;
 import com.tqh.demo.model.BayesArgsEntity;
 import com.tqh.demo.model.PointLocation;
 import com.tqh.demo.model.RpEntity;
@@ -16,8 +17,13 @@ import java.util.List;
 public class KnnService {
     @Autowired
     DatasourceMapper datasourceMapper;
+
     @Autowired
     PointLocationService pointLocationService;
+
+    @Autowired
+    KMeansMapper kMeansMapper;
+
     private int apAmount=15;
     private int k = 3;
     public void getLocByKnn(RpEntity rpEntity, String tableName, int kAmount){
@@ -28,7 +34,11 @@ public class KnnService {
 //        rpEntity.setPoints(RssiTool.getNBiggestMap(rpEntity.getPoints(),10));
 
         //get from database
-        List<RpEntity> rpList = getRssiEntityFromDatabase(tableName);
+        List<String> allPointNames;
+        if (rpEntity.getKmeansGroupNum()!=null) allPointNames= kMeansMapper.getPointNameByCoreNum(tableName+"_type",rpEntity.getKmeansGroupNum());
+        else allPointNames = datasourceMapper.getAllPointName(tableName);
+        List<RpEntity> rpList = getRssiEntityFromDatabase(tableName,allPointNames);
+
         //得到匹配度最高的k个rp
         RpEntity[] rpEntitiesH = getMinK(rpEntity,rpList);
         RpEntity[] rpEntities;
@@ -71,9 +81,8 @@ public class KnnService {
     /**
      * 从数据库取出每一个采样点的AP均值、方差。返回指纹实体的集合
      */
-    private List<RpEntity> getRssiEntityFromDatabase(String tableName) {
+    private List<RpEntity> getRssiEntityFromDatabase(String tableName, List<String> allPointNames) {
         List<RpEntity> rpEntities = new ArrayList<>();
-        List<String> allPointNames = datasourceMapper.getAllPointName(tableName);
         for (String pointName : allPointNames) {
             RpEntity rpEntity = new RpEntity();
             HashMap<String, Double> apEntities = new HashMap<>();

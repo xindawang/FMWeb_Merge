@@ -9,13 +9,13 @@ public class RpEntity {
     private String point_name;
     private Double knnResult;
     private Double x;
-    private int kmeansGroupNum;
+    private Integer kmeansGroupNum;
 
-    public int getKmeansGroupNum() {
+    public Integer getKmeansGroupNum() {
         return kmeansGroupNum;
     }
 
-    public void setKmeansGroupNum(int kmeansGroupNum) {
+    public void setKmeansGroupNum(Integer kmeansGroupNum) {
         this.kmeansGroupNum = kmeansGroupNum;
     }
 

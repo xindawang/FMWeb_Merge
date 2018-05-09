@@ -56,9 +56,9 @@ public class DemoApplicationTests {
 		String filename = "E:\\tablet_mi\\tablet";
 //		datasourceService.insertDataFromTxt("1_2018-04-27-17:11:51",filename);
 		String coreFilename = "E:\\tablet_mi\\tabletCore.txt";
-		kMeansService.insertCoreFromTxt("1_2018-04-27-17:11:51_core",coreFilename);
+		kMeansService.insertCoreFromTxt("1_2018-04-27-17:11:51",coreFilename);
 		String typeFilename = "E:\\tablet_mi\\tabletType.txt";
-		kMeansService.insertTypeFromTxt("1_2018-04-27-17:11:51_type",typeFilename);
+		kMeansService.insertTypeFromTxt("1_2018-04-27-17:11:51",typeFilename);
 	}
 
 	public RpEntity getTestRpEntity(){
@@ -91,7 +91,9 @@ public class DemoApplicationTests {
 
 	@Test
 	public void getPrecision(){
-		String filename = "E:\\tablet_mi_test\\mi";
+		long startTime = System.currentTimeMillis();    //获取开始时间
+
+		String filename = "E:\\tablet_mi_test\\tablet";
 		List<String> fileList = FileTool.traverseFolder(filename);
 		List<String> locStrings = getCNNPointLoc();
 		int rpCurCount = 1;
@@ -115,7 +117,8 @@ public class DemoApplicationTests {
 				}
 				rpEntity.setPoints(apentities);
 //				knnService.getLocByKnn(rpEntity,"1_2018-05-03-14:37:33",5);
-				bayesService.getLocByBayes(rpEntity,"1_2018-04-27-17:11:51",5);
+//				kMeansService.getRpKmeansGroupNum(rpEntity);
+				knnService.getLocByKnn(rpEntity,"1_2018-04-27-17:11:51",4);
 				String [] locxy = locStrings.get(j).split(" ");
 				dif_x = Math.abs((rpEntity.getX() - 12735839)*Math.pow(10,6)-Integer.valueOf(locxy[0]));
 				dif_y = Math.abs((rpEntity.getY()-3569534)*Math.pow(10,6)-Integer.valueOf(locxy[1]));
@@ -129,6 +132,10 @@ public class DemoApplicationTests {
 		}
 		System.out.println((int)(difSum_x/20/34)/Math.pow(10,6));
 		System.out.println((int)(difSum_y/20/34)/Math.pow(10,6));
+
+		long endTime = System.currentTimeMillis();    //获取结束时间
+		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");    //输出程序运行时间
+
 	}
 
 	@Test
