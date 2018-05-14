@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class KnnService {
+public class KnnService implements IPositioningAlgorithm{
     @Autowired
     DatasourceMapper datasourceMapper;
 
@@ -24,8 +24,7 @@ public class KnnService {
     @Autowired
     KMeansMapper kMeansMapper;
 
-    private int apAmount=15;
-    private int k = 3;
+    private int k;
     public void getLocByKnn(RpEntity rpEntity, String tableName, int kAmount){
 
         k = kAmount;
@@ -35,7 +34,7 @@ public class KnnService {
 
         //get from database
         List<String> allPointNames;
-        if (rpEntity.getKmeansGroupNum()!=null) allPointNames= kMeansMapper.getPointNameByCoreNum(tableName+"_type",rpEntity.getKmeansGroupNum());
+        if (rpEntity.getKmeansGroupNum()!=null) allPointNames= kMeansMapper.getPointNameByCoreNum(RssiTool.tableName+"_type",rpEntity.getKmeansGroupNum());
         else allPointNames = datasourceMapper.getAllPointName(tableName);
         List<RpEntity> rpList = getRssiEntityFromDatabase(tableName,allPointNames);
 
@@ -86,7 +85,7 @@ public class KnnService {
         for (String pointName : allPointNames) {
             RpEntity rpEntity = new RpEntity();
             HashMap<String, Double> apEntities = new HashMap<>();
-            for (int i = 1; i <= apAmount; i++) {
+            for (int i = 1; i <= RssiTool.apAmount; i++) {
                 String apName =  "ap" + i;
                 String avgName = "ap" + i + "_average";
                 BayesArgsEntity eachAp = datasourceMapper.getEachApAvg(tableName,avgName, pointName);
@@ -165,6 +164,7 @@ public class KnnService {
         }
         return rpEntities;
     }
+
     private PointLocation[] getRelPointInfo(RpEntity[] rpEntities) {
         PointLocation[] pointLocEntity = new PointLocation[k];
         int i = 0 ;
@@ -172,5 +172,22 @@ public class KnnService {
             pointLocEntity[i++]= pointLocationService.getPointLocation(rpEntity.getPoint_name());
         }
         return pointLocEntity;
+    }
+
+    @Override
+    public void getLoc(RpEntity rpEntity) {
+        getLocByKnn(rpEntity, RssiTool.tableName, 3);
+    }
+
+    @Override
+    public void getLocByMinusRel(RpEntity rpEntity) {
+        RssiTool.changeAbsEntityToMinusRel(rpEntity);
+        getLocByKnn(rpEntity, RssiTool.tableName+"_minus_rel", 5);
+    }
+
+    @Override
+    public void getLocByDivideRel(RpEntity rpEntity) {
+        RssiTool.changeAbsEntityToDivideRel(rpEntity);
+        getLocByKnn(rpEntity, RssiTool.tableName+"_divide_rel", 5);
     }
 }

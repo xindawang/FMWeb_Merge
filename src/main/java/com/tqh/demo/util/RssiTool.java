@@ -14,6 +14,9 @@ import java.util.*;
  */
 public class RssiTool {
 
+    public static int apAmount = 15;
+    public static String tableName = "1_2018-04-27-17:11:51";
+
     public static void changeAbsEntityToMinusRel(RpEntity rpEntity){
         HashMap<String,Double> apEntities = rpEntity.getPoints();
         double minAbsRssi = -200;
@@ -28,7 +31,7 @@ public class RssiTool {
         rpEntity.setPoints(apEntities);
     }
 
-    public static void changeAbsEntityToRel(RpEntity rpEntity){
+    public static void changeAbsEntityToDivideRel(RpEntity rpEntity){
         HashMap<String,Double> apEntities = rpEntity.getPoints();
         double minAbsRssi = -200;
         for (Double v : apEntities.values()){

@@ -58,15 +58,7 @@ public class UserLocationController {
             if (RssiTool.getNameChangeMap().containsKey(key)) apentities.put(key,Double.parseDouble(jsonParam.getString(key)));
         }
         rpEntity.setPoints(apentities);
-        if (algorithm!=null) {
-            if (algorithm.equals("knn")) {
-                knnService.getLocByKnn(rpEntity,"1_2018-04-27-17:11:51",1);
-            }else if (algorithm.equals("bayes")) {
-                bayesService.getLocByBayes(rpEntity,"1_2018-04-27-17:11:51",3);
-            }
-        }else{
-            return null;
-        }
+        userLocationService.getMBUserLocation(rpEntity,algorithm);
         return rpEntity.getLocString();
     }
 }

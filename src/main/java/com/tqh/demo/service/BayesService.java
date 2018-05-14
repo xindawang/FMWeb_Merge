@@ -1,6 +1,7 @@
 package com.tqh.demo.service;
 
 import com.tqh.demo.mapper.DatasourceMapper;
+import com.tqh.demo.mapper.KMeansMapper;
 import com.tqh.demo.mapper.PointLocationMapper;
 import com.tqh.demo.model.BayesArgsEntity;
 import com.tqh.demo.model.PointLocation;
@@ -13,24 +14,30 @@ import java.util.*;
 
 import static java.lang.Math.E;
 @Service
-public class BayesService {
+public class BayesService implements IPositioningAlgorithm {
     @Autowired
     PointLocationMapper pointLocationMapper;
+
     @Autowired
     DatasourceMapper datasourceMapper;
-    private int apAmount = 15;
 
-    private int k = 3;
-    public void getLocByBayes(RpEntity rpEntity, String tableName, int kAmount){
+    @Autowired
+    KMeansMapper kMeansMapper;
+
+    private int k;
+    public void getLocByBayes(RpEntity rpEntity, String  tableName,int kAmount){
 
         k = kAmount;
         //initialize the input data
 //        HashMap<String, Double> rpInfoSrc = RssiTool.getNBiggestMap(rpEntity.getPoints(),7);
         HashMap<String, Double> rpInfoSrc = rpEntity.getPoints();
 
+        List<String> allPointNames;
+        if (rpEntity.getKmeansGroupNum()!=null) allPointNames= kMeansMapper.getPointNameByCoreNum(RssiTool.tableName+"_type",rpEntity.getKmeansGroupNum());
+        else allPointNames = datasourceMapper.getAllPointName(tableName);
 
         //get ratio and location info of each point and add up for the result
-        PointLocation[] maxKEntities = getKPointsWithHighestProb(tableName,rpInfoSrc);
+        PointLocation[] maxKEntities = getKPointsWithHighestProb(tableName,rpInfoSrc,allPointNames);
 
 
         double sum = 0,x=0,y=0;
@@ -51,7 +58,7 @@ public class BayesService {
         rpEntity.setY(result_y);
     }
 
-    private PointLocation[] getKPointsWithHighestProb(String tableName, HashMap<String, Double> rpInfoSrc){
+    private PointLocation[] getKPointsWithHighestProb(String tableName, HashMap<String, Double> rpInfoSrc,List<String> allPointNames){
 
         //use the way of priority queue, which could be compared to the knn
         Comparator<PointLocation> cmp = new Comparator<PointLocation>() {
@@ -63,7 +70,6 @@ public class BayesService {
 
         Queue<PointLocation> maxKPoints = new PriorityQueue<>(cmp);
         PointLocation[] pointLocEntities = new PointLocation[k];
-        List<String> allPointNames = datasourceMapper.getAllPointName(tableName);
 
         //calculate the probability of each candidate point, pick the max k
         for (String pointName : allPointNames) {
@@ -71,7 +77,7 @@ public class BayesService {
             double eachPointProb = 1.0;
 
             //put the online data into Gauss formula with Gauss index of each ap
-            for (int i = 1; i <= apAmount; i++) {
+            for (int i = 1; i <= RssiTool.apAmount; i++) {
                 String apName = "ap" + i;
                 String avgName = "ap" + i + "_average";
                 String varName = "ap" + i + "_variance";
@@ -84,6 +90,7 @@ public class BayesService {
                 double thisApProb = 1;
                 if (rpInfoSrc.get(apName)!=null){
                     thisApProb = 1 / Math.sqrt(2 * Math.PI * eachAp.getApNameVar()) * Math.pow(E, -Math.pow(rpInfoSrc.get(apName) - eachAp.getApNameAvg(), 2) / (2 * eachAp.getApNameVar()));
+                    if (thisApProb<0.000001) thisApProb = 0.000001;
                 }
                 eachPointProb *= thisApProb;
             }
@@ -95,5 +102,22 @@ public class BayesService {
             pointLocEntities[i] = maxKPoints.poll();
         }
         return pointLocEntities;
+    }
+
+    @Override
+    public void getLoc(RpEntity rpEntity) {
+        getLocByBayes(rpEntity, RssiTool.tableName, 5);
+    }
+
+    @Override
+    public void getLocByMinusRel(RpEntity rpEntity) {
+        RssiTool.changeAbsEntityToMinusRel(rpEntity);
+        getLocByBayes(rpEntity, RssiTool.tableName+"_minus_rel", 5);
+    }
+
+    @Override
+    public void getLocByDivideRel(RpEntity rpEntity) {
+        RssiTool.changeAbsEntityToDivideRel(rpEntity);
+        getLocByBayes(rpEntity, RssiTool.tableName+"_divide_rel", 5);
     }
 }

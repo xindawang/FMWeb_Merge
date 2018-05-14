@@ -46,9 +46,11 @@ public class DemoApplicationTests {
 		String diviceId = "2";
 		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 		String recordDate = sDateFormat.format(new java.util.Date());
-		datasourceService.createTable(diviceId+"_"+recordDate);
-		kMeansService.createCoreTable(diviceId+"_"+recordDate+"_core");
-		kMeansService.createTypeTable(diviceId+"_"+recordDate+"_type");
+//		datasourceService.createTable(diviceId+"_"+recordDate);
+//		datasourceService.createTable(diviceId+"_"+recordDate+"_minus_rel");
+		datasourceService.createTable(diviceId+"_"+recordDate+"_divide_rel");
+//		kMeansService.createCoreTable(diviceId+"_"+recordDate+"_core");
+//		kMeansService.createTypeTable(diviceId+"_"+recordDate+"_type");
 	}
 
 	@Test
@@ -61,8 +63,18 @@ public class DemoApplicationTests {
 		kMeansService.insertTypeFromTxt("1_2018-04-27-17:11:51",typeFilename);
 	}
 
+	@Test
+	public void insertRelData(){
+//		String filename = "E:\\tablet_mi\\tablet";
+//		datasourceService.printRelData(filename);
+
+		String filename = "D:\\divideData.txt";
+		datasourceService.insertRelDataFromTxt("1_2018-04-27-17:11:51_divide_rel",filename);
+
+	}
+
 	public RpEntity getTestRpEntity(){
-		String rssi = "TP-LINK_115D -58;Xiaomi_3525_CADA -55;abc3 -61;MERCURY_BD09 -66;abc2 -62;abc7 -45;MERCURY_CFF9 -67;Xiaomi_31CB_CE34 -67;abc6 -38;abc4 -36;MERCURY_B932 -71;TP-LINK_1646 -61;TP-LINK_0236 -35;TP-LINK_3E5D -65;abc8 -43;";
+		String rssi = "abc2 -53;TP-LINK_3E5D -33;abc4 -67;TP-LINK_1646 -80;abc8 -71;abc3 -54;Xiaomi_31CB_CE34 -81;abc7 -56;TP-LINK_0236 -71;Xiaomi_3525_CADA -81;abc6 -71;MERCURY_BD09 -20;MERCURY_CFF9 -41;TP-LINK_115D -75;";
 //		String rssi = "abc6 -32;abc7 -34;abc4 -47;Xiaomi_31CB_CE34 -61;MERCURY_B932 -59;Xiaomi_3525_CADA -47;abc2 -68;abc3 -55;abc8 -43;";
 		RpEntity rpEntity = new RpEntity();
 		HashMap<String,Double> apentities = new HashMap<>();
@@ -73,13 +85,14 @@ public class DemoApplicationTests {
 				apentities.put(RssiTool.getNewName(eachAp[0]),Double.valueOf(eachAp[1]));
 		}
 		rpEntity.setPoints(apentities);
+		RssiTool.changeAbsEntityToDivideRel(rpEntity);
 		return rpEntity;
 	}
 
 	@Test
 	public void getLoc(){
 		RpEntity rpEntity = getTestRpEntity();
-		bayesService.getLocByBayes(rpEntity,"1_2018-04-27-17:11:51",3);
+		bayesService.getLocByBayes(rpEntity,"1_2018-04-27-17:11:51_divide_rel",1);
 		System.out.println(rpEntity.getLocString());
 	}
 
@@ -90,10 +103,51 @@ public class DemoApplicationTests {
 	}
 
 	@Test
-	public void getPrecision(){
-		long startTime = System.currentTimeMillis();    //获取开始时间
+	public void getGroupPrecision(){
+		String tabletName = "E:\\tablet_mi_test\\tablet";
+		String miName = "E:\\tablet_mi_test\\mi";
+		String absTable ="1_2018-04-27-17:11:51";
+		String divideTable ="1_2018-04-27-17:11:51_divide_rel";
+		String minusTable ="1_2018-04-27-17:11:51_minus_rel";
 
-		String filename = "E:\\tablet_mi_test\\tablet";
+//		getPrecision(tabletName,absTable,1,0,3);
+//		getPrecision(tabletName,absTable,2,0,5);
+
+		System.out.println("tablet abs bayes");
+		for (int i = 1; i < 10; i++) {
+			getPrecision(tabletName,absTable,2,0,i);
+		}
+//
+//		System.out.println("mi abs bayes");
+//		for (int i = 1; i < 10; i++) {
+//			getPrecision(miName,absTable,2,0,i);
+//		}
+//
+//		System.out.println("tablet divide knn");
+//		for (int i = 1; i < 10; i++) {
+//			getPrecision(tabletName,divideTable,1,2,i);
+//		}
+//
+//		System.out.println("tablet divide bayes");
+//		for (int i = 1; i < 10; i++) {
+//			getPrecision(tabletName,divideTable,2,2,i);
+//		}
+//
+//		System.out.println("mi divide knn");
+//		for (int i = 1; i < 10; i++) {
+//			getPrecision(miName,divideTable,1,2,i);
+//		}
+//
+//		System.out.println("mi divide bayes");
+//		for (int i = 1; i < 10; i++) {
+//			getPrecision(miName,divideTable,2,2,i);
+//		}
+	}
+
+
+	public void getPrecision(String filename, String tablename, int algo, int dataSrc,int candidateNum){
+//		long startTime = System.currentTimeMillis();    //获取开始时间
+
 		List<String> fileList = FileTool.traverseFolder(filename);
 		List<String> locStrings = getCNNPointLoc();
 		int rpCurCount = 1;
@@ -104,7 +158,7 @@ public class DemoApplicationTests {
 		int count = 1;
 		for (int j = 0; j < fileList.size(); j++){
 			List<String> eachPointData = datasourceService.getRssiFromTxt(fileList.get(rpCurCount-1),1,20);
-			System.out.println(fileList.get(rpCurCount-1));
+//			System.out.println(fileList.get(rpCurCount-1));
 			int curFileCount=1;
 			for(String str : eachPointData){
 				RpEntity rpEntity = new RpEntity();
@@ -116,13 +170,17 @@ public class DemoApplicationTests {
 					apentities.put(RssiTool.getNewName(eachAp[0]),Double.valueOf(eachAp[1]));
 				}
 				rpEntity.setPoints(apentities);
-//				knnService.getLocByKnn(rpEntity,"1_2018-05-03-14:37:33",5);
+
 //				kMeansService.getRpKmeansGroupNum(rpEntity);
-				knnService.getLocByKnn(rpEntity,"1_2018-04-27-17:11:51",4);
+				if (dataSrc ==1)RssiTool.changeAbsEntityToMinusRel(rpEntity);
+				if (dataSrc ==2)RssiTool.changeAbsEntityToDivideRel(rpEntity);
+				if (algo ==1)knnService.getLocByKnn(rpEntity,tablename,candidateNum);
+				if (algo ==2)bayesService.getLocByBayes(rpEntity,tablename,candidateNum);
+
 				String [] locxy = locStrings.get(j).split(" ");
 				dif_x = Math.abs((rpEntity.getX() - 12735839)*Math.pow(10,6)-Integer.valueOf(locxy[0]));
 				dif_y = Math.abs((rpEntity.getY()-3569534)*Math.pow(10,6)-Integer.valueOf(locxy[1]));
-				System.out.println(count +" " +curFileCount + " " +dif_x/Math.pow(10,6)+" "+dif_y/Math.pow(10,6));
+//				System.out.println(count +" " +curFileCount + " " +dif_x/Math.pow(10,6)+" "+dif_y/Math.pow(10,6));
 				count++;
 				curFileCount++;
 				difSum_x+=dif_x;
@@ -133,8 +191,9 @@ public class DemoApplicationTests {
 		System.out.println((int)(difSum_x/20/34)/Math.pow(10,6));
 		System.out.println((int)(difSum_y/20/34)/Math.pow(10,6));
 
-		long endTime = System.currentTimeMillis();    //获取结束时间
-		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");    //输出程序运行时间
+//		long endTime = System.currentTimeMillis();    //获取结束时间
+		System.out.println(candidateNum);
+//		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");    //输出程序运行时间
 
 	}
 
