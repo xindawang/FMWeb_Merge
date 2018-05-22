@@ -58,18 +58,39 @@ public class DatasourceService {
                         apentities.put(eachAp[0],Double.valueOf(eachAp[1]));
                 }
                 rpEntity.setPoints(apentities);
-                RssiTool.changeAbsEntityToMinusRel(rpEntity);
-//                RssiTool.changeAbsEntityToDivideRel(rpEntity);
+//                RssiTool.changeAbsEntityToMinusRel(rpEntity);
+                RssiTool.changeAbsEntityToDivideRel(rpEntity);
                 printRssi(rpEntity);
             }
 
         }
     }
 
+    public void printAbsData(String filename){
+        List<String> fileList = FileTool.traverseFolder(filename);
+        FileWriter writer;
+        try {
+            writer = new FileWriter("D:\\IotSrc\\mi\\data.txt",true);
+            for(String file : fileList){
+                List<String> eachPointData = getRssiFromTxt(file,1,100);
+                for (String s:eachPointData){
+                    writer.write(s+"\n");
+                }
+            }
+            writer.write("\n");
+            writer.flush();//刷新内存，将内存中的数据立刻写出。
+            writer.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
     public void printRssi(RpEntity rpEntity){
         FileWriter writer;
         try {
-            writer = new FileWriter("D://minusData.txt",true);
+            writer = new FileWriter("D:\\IotSrc\\mi\\divideData",true);
 //            writer = new FileWriter("D://divideData.txt",true);
             for (String apName :rpEntity.getPoints().keySet()) {
                 writer.write(apName+" "+rpEntity.getPoints().get(apName)+";");
@@ -81,8 +102,6 @@ public class DatasourceService {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-
     }
 
     @Transactional(rollbackFor = Exception.class)

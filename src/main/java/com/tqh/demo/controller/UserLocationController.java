@@ -13,6 +13,8 @@ import com.tqh.demo.service.UserLocationService;
 import com.tqh.demo.util.JsonTool;
 import com.tqh.demo.util.RssiTool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +31,7 @@ public class UserLocationController {
     UserLocationService userLocationService;
 
     @Autowired
-    private KnnService knnService;
-
-    @Autowired
-    private BayesService bayesService;
+    private SimpMessagingTemplate template;
 
     @RequestMapping("/selectAllUserLocation")
     @ResponseBody
@@ -54,11 +53,31 @@ public class UserLocationController {
         RpEntity rpEntity = new RpEntity();
         HashMap<String,Double> apentities = new HashMap<>();
         String algorithm = jsonParam.getString("algorithm");
+        String device = jsonParam.getString("device");
          for (String key : jsonParam.keySet()){
-            if (RssiTool.getNameChangeMap().containsKey(key)) apentities.put(key,Double.parseDouble(jsonParam.getString(key)));
+            if (RssiTool.getNameChangeMap().containsKey(key)) apentities.put(RssiTool.getNewName(key),Double.parseDouble(jsonParam.getString(key)));
         }
         rpEntity.setPoints(apentities);
         userLocationService.getMBUserLocation(rpEntity,algorithm);
+        if (device!=null) userLocationService.saveMBUserLocation(rpEntity,device);
         return rpEntity.getLocString();
+    }
+
+    @MessageMapping("/app_wifiMessage")
+    public void getMbLocWS(@RequestBody JSONObject jsonParam) {
+        RpEntity rpEntity = new RpEntity();
+        HashMap<String,Double> apentities = new HashMap<>();
+        String algorithm = jsonParam.getString("algorithm");
+        String device = jsonParam.getString("device");
+        String username = jsonParam.getString("username");
+        for (String key : jsonParam.keySet()){
+            if (RssiTool.getNameChangeMap().containsKey(key)) apentities.put(RssiTool.getNewName(key),Double.parseDouble(jsonParam.getString(key)));
+        }
+        rpEntity.setPoints(apentities);
+        rpEntity.setUsername(username);
+        userLocationService.getMBUserLocation(rpEntity,algorithm);
+        if (device!=null) userLocationService.saveMBUserLocation(rpEntity,device);
+        if (username!=null) template.convertAndSend("/iotMap/loc/"+username, rpEntity.getLocString());
+        template.convertAndSend("/iotMap/loc", rpEntity.getLocString());
     }
 }

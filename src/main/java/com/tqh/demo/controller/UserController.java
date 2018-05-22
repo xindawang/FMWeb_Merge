@@ -3,6 +3,8 @@ package com.tqh.demo.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.tqh.demo.model.User;
 import com.tqh.demo.service.UserService;
+import com.tqh.demo.util.FileTool;
+import org.apache.poi.hslf.blip.Bitmap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,6 +58,18 @@ public class UserController {
         }else {
             return "password wrong";
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/uploadPersonalInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public String uploadPersonalInfo(@RequestBody JSONObject jsonParam,HttpSession session, Model model){
+        String username=jsonParam.getString("username");
+        String nickname=jsonParam.getString("nickname");
+        String portrait=jsonParam.getString("portrait");
+        String macAddress = jsonParam.getString("macAddress");
+//        Bitmap bitmap = FileTool.convertStringToIcon(jsonParam.getString("portrait"));
+        String portraitPath = "static/img/"+username+".png";
+        return "success";
     }
 
     @RequestMapping("/logout")

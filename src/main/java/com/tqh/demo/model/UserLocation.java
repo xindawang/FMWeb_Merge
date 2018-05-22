@@ -7,7 +7,8 @@ public class UserLocation {
     private Double x;
     private Double y;
     private Date saveTime;
-    private int no;
+    private Integer userid;
+    private User user;
 
     public String getDevice() {
         return device;
@@ -41,11 +42,20 @@ public class UserLocation {
         this.saveTime = saveTime;
     }
 
-    public int getNo() {
-        return no;
+    public Integer getUserid() {
+        return userid;
     }
 
-    public void setNo(int no) {
-        this.no = no;
+    public void setUserid(int userid) {
+        this.userid = userid;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
 }

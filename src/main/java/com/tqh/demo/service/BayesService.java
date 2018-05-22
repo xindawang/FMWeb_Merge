@@ -33,8 +33,13 @@ public class BayesService implements IPositioningAlgorithm {
         HashMap<String, Double> rpInfoSrc = rpEntity.getPoints();
 
         List<String> allPointNames;
-        if (rpEntity.getKmeansGroupNum()!=null) allPointNames= kMeansMapper.getPointNameByCoreNum(RssiTool.tableName+"_type",rpEntity.getKmeansGroupNum());
-        else allPointNames = datasourceMapper.getAllPointName(tableName);
+        Integer clusterType = rpEntity.getKmeansGroupNum();
+        if (clusterType==null) allPointNames = datasourceMapper.getAllPointName(tableName);
+        else  {
+            allPointNames = kMeansMapper.getPointNameByCoreNum(RssiTool.tableName+"_type",clusterType);
+            if (clusterType ==0) allPointNames.addAll(kMeansMapper.getPointNameByCoreNum(RssiTool.tableName+"_type",1));
+            if (clusterType ==1) allPointNames.addAll(kMeansMapper.getPointNameByCoreNum(RssiTool.tableName+"_type",0));
+        }
 
         //get ratio and location info of each point and add up for the result
         PointLocation[] maxKEntities = getKPointsWithHighestProb(tableName,rpInfoSrc,allPointNames);

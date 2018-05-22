@@ -25,6 +25,12 @@ $("#device_table").bootstrapTable({ // 对应table标签的id
             valign: 'middle' // 上下居中
         },
         {
+            field: 'user.userName', // 返回json数据中的name
+            title: '用户', // 表格表头显示文字
+            align: 'center', // 左右居中
+            valign: 'middle' // 上下居中
+        },
+        {
             field: 'x',
             title: 'X',
             align: 'center',
@@ -39,12 +45,6 @@ $("#device_table").bootstrapTable({ // 对应table标签的id
         {
             field: 'saveTime', // 返回json数据中的name
             title: '记录时间', // 表格表头显示文字
-            align: 'center', // 左右居中
-            valign: 'middle' // 上下居中
-        },
-        {
-            field: 'no', // 返回json数据中的name
-            title: '编号', // 表格表头显示文字
             align: 'center', // 左右居中
             valign: 'middle' // 上下居中
         },

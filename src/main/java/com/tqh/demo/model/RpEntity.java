@@ -1,5 +1,6 @@
 package com.tqh.demo.model;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 public class RpEntity {
@@ -10,6 +11,15 @@ public class RpEntity {
     private Double knnResult;
     private Double x;
     private Integer kmeansGroupNum;
+    private String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public Integer getKmeansGroupNum() {
         return kmeansGroupNum;
@@ -78,6 +88,10 @@ public class RpEntity {
     private Double y;
 
     public String getLocString(){
-        return this.getX()+","+this.getY();
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+        String recordDate = sDateFormat.format(new java.util.Date());
+        if (username!=null) return this.getX()+","+this.getY()+","+this.getUsername()+","+recordDate;
+
+        return this.getX()+","+this.getY()+","+recordDate;
     }
 }

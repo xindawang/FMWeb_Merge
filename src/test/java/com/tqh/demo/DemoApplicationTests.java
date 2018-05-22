@@ -1,11 +1,13 @@
 package com.tqh.demo;
 
+import com.tqh.demo.mapper.KMeansMapper;
 import com.tqh.demo.model.KMeansEntity;
 import com.tqh.demo.model.PointLocation;
 import com.tqh.demo.model.RpEntity;
 import com.tqh.demo.service.*;
 import com.tqh.demo.util.FileTool;
 import com.tqh.demo.util.RssiTool;
+import org.apache.poi.hslf.blip.Bitmap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,35 +43,38 @@ public class DemoApplicationTests {
 	@Autowired
 	BayesService bayesService;
 
+	@Autowired
+	KMeansMapper kMeansMapper;
+
 	@Test
 	public void createNewTable(){
 		String diviceId = "2";
 		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 		String recordDate = sDateFormat.format(new java.util.Date());
-//		datasourceService.createTable(diviceId+"_"+recordDate);
-//		datasourceService.createTable(diviceId+"_"+recordDate+"_minus_rel");
+		datasourceService.createTable(diviceId+"_"+recordDate);
+		datasourceService.createTable(diviceId+"_"+recordDate+"_minus_rel");
 		datasourceService.createTable(diviceId+"_"+recordDate+"_divide_rel");
-//		kMeansService.createCoreTable(diviceId+"_"+recordDate+"_core");
-//		kMeansService.createTypeTable(diviceId+"_"+recordDate+"_type");
+		kMeansService.createCoreTable(diviceId+"_"+recordDate+"_core");
+		kMeansService.createTypeTable(diviceId+"_"+recordDate+"_type");
 	}
 
 	@Test
 	public void insertData(){
-		String filename = "E:\\tablet_mi\\tablet";
-//		datasourceService.insertDataFromTxt("1_2018-04-27-17:11:51",filename);
-		String coreFilename = "E:\\tablet_mi\\tabletCore.txt";
-		kMeansService.insertCoreFromTxt("1_2018-04-27-17:11:51",coreFilename);
-		String typeFilename = "E:\\tablet_mi\\tabletType.txt";
-		kMeansService.insertTypeFromTxt("1_2018-04-27-17:11:51",typeFilename);
+		String filename = "E:\\tablet_mi\\mi";
+		datasourceService.insertDataFromTxt("2_2018-05-15-09:28:11",filename);
+//		String coreFilename = "E:\\tablet_mi\\tabletCore.txt";
+//		kMeansService.insertCoreFromTxt("1_2018-04-27-17:11:51",coreFilename);
+//		String typeFilename = "E:\\tablet_mi\\tabletType.txt";
+//		kMeansService.insertTypeFromTxt("1_2018-04-27-17:11:51",typeFilename);
 	}
 
 	@Test
 	public void insertRelData(){
-//		String filename = "E:\\tablet_mi\\tablet";
-//		datasourceService.printRelData(filename);
+//		String filename = "E:\\tablet_mi\\mi";
+//		datasourceService.printAbsData(filename);
 
-		String filename = "D:\\divideData.txt";
-		datasourceService.insertRelDataFromTxt("1_2018-04-27-17:11:51_divide_rel",filename);
+		String filename = "D:\\IotSrc\\mi\\minusData.txt";
+		datasourceService.insertRelDataFromTxt("2_2018-05-15-09:28:11_minus_rel",filename);
 
 	}
 
@@ -314,4 +319,27 @@ public class DemoApplicationTests {
 		kMeansService.startClustering("1_2018-04-27-17:11:51");
 	}
 
+	@Test
+	public void testKmeans(){
+		List<String> allPointNames;
+		allPointNames= kMeansMapper.getPointNameByCoreNum(RssiTool.tableName+"_type",0);
+		System.out.println(allPointNames);
+	}
+
+	@Test
+	public void getBitmap(){
+		String filename = "D:\\11.txt";
+		try {
+			FileReader reader = new FileReader(filename);
+			BufferedReader br = new BufferedReader(reader);
+			String str = br.readLine();
+//			Bitmap bitmap = FileTool.convertStringToIcon(str);
+//			System.out.println(bitmap);
+			br.close();
+		} catch (FileNotFoundException ex) {
+			ex.printStackTrace();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
 }

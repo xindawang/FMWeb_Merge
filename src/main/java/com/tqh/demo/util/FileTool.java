@@ -1,7 +1,10 @@
 package com.tqh.demo.util;
 
-import java.io.File;
+import org.apache.poi.hslf.blip.Bitmap;
+
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -26,4 +29,19 @@ public class FileTool {
         return fileList;
     }
 
+
+//    /**
+//     * string转成bitmap
+//     *
+//     * @param st
+//     */
+//    public static Bitmap convertStringToIcon(String st)
+//    {
+//        byte[] bitmapArray = Base64.getDecoder().decode(st);
+//        Bitmap bitmap = BitmapFactory.
+//    }
+
+    public void saveMyBitmap(Bitmap mBitmap,String bitName)  {
+
+    }
 }

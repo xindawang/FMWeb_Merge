@@ -228,7 +228,7 @@ public class KMeansService {
     }
 
     public void getRpKmeansGroupNum(RpEntity rpEntity){
-        List<KMeansEntity> kMeansEntities = getCoreEntityFromDatabase("1_2018-04-27-17:11:51_core");
+        List<KMeansEntity> kMeansEntities = getCoreEntityFromDatabase(RssiTool.tableName+"_core");
         int core =-1;
         double leastResult = Double.MAX_VALUE;
         for (KMeansEntity singleCore : kMeansEntities) {

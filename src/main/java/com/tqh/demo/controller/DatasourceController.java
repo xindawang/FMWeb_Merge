@@ -44,7 +44,7 @@ public class DatasourceController {
     @Transactional(rollbackFor = Exception.class)
     public boolean createTable(@PathVariable("id") int id){
             Datasource datasource=datasourceService.selectDatasource(id);
-            String upload_time=id+datasource.getUpload_time();
+            String upload_time=id+"_"+datasource.getUpload_time();
             String data_path=datasource.getData_path();
             datasourceService.createTable(upload_time);
             datasourceService.insertDataFromTxt(upload_time,data_path);

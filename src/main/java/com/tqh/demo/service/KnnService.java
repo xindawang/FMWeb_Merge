@@ -32,10 +32,16 @@ public class KnnService implements IPositioningAlgorithm{
         //appoint the number of chosen AP point
 //        rpEntity.setPoints(RssiTool.getNBiggestMap(rpEntity.getPoints(),10));
 
-        //get from database
+        //get fingerprints from database
         List<String> allPointNames;
-        if (rpEntity.getKmeansGroupNum()!=null) allPointNames= kMeansMapper.getPointNameByCoreNum(RssiTool.tableName+"_type",rpEntity.getKmeansGroupNum());
-        else allPointNames = datasourceMapper.getAllPointName(tableName);
+        Integer clusterType = rpEntity.getKmeansGroupNum();
+        if (clusterType==null) allPointNames = datasourceMapper.getAllPointName(tableName);
+        else  {
+            allPointNames = kMeansMapper.getPointNameByCoreNum(RssiTool.tableName+"_type",clusterType);
+            if (clusterType ==0) allPointNames.addAll(kMeansMapper.getPointNameByCoreNum(RssiTool.tableName+"_type",1));
+            if (clusterType ==1) allPointNames.addAll(kMeansMapper.getPointNameByCoreNum(RssiTool.tableName+"_type",0));
+        }
+
         List<RpEntity> rpList = getRssiEntityFromDatabase(tableName,allPointNames);
 
         //得到匹配度最高的k个rp

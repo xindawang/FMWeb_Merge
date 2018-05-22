@@ -1,7 +1,10 @@
 package com.tqh.demo.util;
 
 
+import com.tqh.demo.mapper.DatasourceMapper;
+import com.tqh.demo.mapper.KMeansMapper;
 import com.tqh.demo.model.RpEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -13,6 +16,12 @@ import java.util.*;
  * Created by ACER on 2018/3/8.
  */
 public class RssiTool {
+
+    @Autowired
+    static DatasourceMapper datasourceMapper;
+
+    @Autowired
+    static KMeansMapper kMeansMapper;
 
     public static int apAmount = 15;
     public static String tableName = "1_2018-04-27-17:11:51";

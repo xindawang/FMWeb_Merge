@@ -7,7 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>基础地图显示</title>
     <link rel="stylesheet"  href=" http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
-    <script src="static/lib/fengmap.min.js"></script>
+    <script src="/static/lib/fengmap.min.js"></script>
+    <script type="text/javascript" src="/static/lib/sockjs-0.3.4.min.js"></script>
+    <script type="text/javascript" src="/static/lib/stomp.min.js"></script>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
@@ -22,6 +24,6 @@
     <span th:text="'用户：'+${user.userName}" style="font-weight: bold;font-size: 15px;margin-left: 3%"/>
     <a th:href="@{'/logout/'+${user.userName}}" style="text-align:center;margin-left: 1%">注销</a>
 </div>
-<script src="static/lib/map.js"></script>
+<script src="/static/lib/map.js"></script>
 </body>
 </html>

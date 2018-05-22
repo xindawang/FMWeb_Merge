@@ -53,6 +53,9 @@ window.onload = function () {
             y: 0
         }
     });
+
+    websocketInit();
+
     var draw = false;
     //地图点击事件
     map.on('mapClickNode', function (event) {
@@ -120,39 +123,99 @@ window.onload = function () {
                 break;
         }
     });
+
+
 };
+
+function websocketInit() {
+    var socket = new SockJS('/endpointWifi');
+    var stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function () {
+        console.log('开始连接')
+        stompClient.subscribe('/iotMap/loc', function (result) {
+            clearFormerMarker(result);
+            updateUserLoc(result);
+
+        });
+    });
+}
+
+function updateUserLoc(user){
+    var loc = user.body.split(",");
+    //截止日期，之前不显示
+    var group = map.getFMGroup(1);
+
+    //返回当前层中第一个imageMarkerLayer,如果没有，则自动创建
+    var id = getUserId(loc[2]);
+    var layer = group.getOrCreateLayer('imageMarker');
+
+    var im = new fengmap.FMImageMarker({
+        id:id,
+        x: loc[0],
+        y: loc[1],
+        z: 1,
+        url: 'static/img/' + id + '.png', //设置图片路径
+        size: 30,                               //设置图片显示尺寸
+        //图片标注渲染完成的回调方法
+        callback: function () {
+            // 在图片载入完成后，设置 "一直可见",即显示优先级最高
+            // 如相同位置有其他标注，则此标注在前。
+            im.alwaysShow();
+        }
+    });
+    layer.addMarker(im);
+}
+
+function clearFormerMarker(user){
+    var loc = user.body.split(",");
+    //截止日期，之前不显示
+    var group = map.getFMGroup(1);
+
+    //返回当前层中第一个imageMarkerLayer,如果没有，则自动创建
+    var id = getUserId(loc[2]);
+    var layer = group.getOrCreateLayer('imageMarker');
+
+    for (var im =0;im<layer.markers.length;im++){
+        var imId = layer.markers[im].id_
+        if (imId == id)
+            layer.removeMarker(layer.markers[im]);
+    }
+}
+
+function getUserId(username) {
+    for (var i = 0; i < users.length; i++) {
+        if (users[i].user.userName == username)
+            return users[i].userid;
+    }
+}
 
 function drawUserImage() {
     var groupLayer = map.getFMGroup(1);
-    var layer = new fengmap.FMImageMarkerLayer("imageMarker");
+    var layer = groupLayer.getOrCreateLayer('imageMarker')
     groupLayer.addLayer(layer);
-    //截止日期，之前不显示
-    var EndTime = new Date().Format("1998-2-13 12:22:12");
+
     for (var i = 0; i < users.length; i++) {
         var user_x = users[i]["x"];
         var user_y = users[i]["y"];
         var saveTime = new Date().Format(users[i]["saveTime"]);
-        var no = users[i]["no"];
-        if (saveTime > EndTime) {
-            var im = new fengmap.FMImageMarker({
-                x: user_x,
-                y: user_y,
-                z: 1,
-                url: 'static/img/' + no + '.png', //设置图片路径
-                size: 30,                               //设置图片显示尺寸
-                //图片标注渲染完成的回调方法
-                callback: function () {
-                    // 在图片载入完成后，设置 "一直可见",即显示优先级最高
-                    // 如相同位置有其他标注，则此标注在前。
-                    im.alwaysShow();
-                }
-            });
+        var id = users[i].userid;
 
-            layer.addMarker(im);
-        }
-        else {
-            continue;
-        }
+        var im = new fengmap.FMImageMarker({
+            id:id,
+            x: user_x,
+            y: user_y,
+            z: 1,
+            url: 'static/img/' + id + '.png', //设置图片路径
+            size: 30,                               //设置图片显示尺寸
+            //图片标注渲染完成的回调方法
+            callback: function () {
+                // 在图片载入完成后，设置 "一直可见",即显示优先级最高
+                // 如相同位置有其他标注，则此标注在前。
+                im.alwaysShow();
+            }
+        });
+        layer.addMarker(im);
     }
 }
 
