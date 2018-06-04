@@ -178,13 +178,13 @@ function clearFormerMarker(user){
 
     for (var im =0;im<layer.markers.length;im++){
         var imId = layer.markers[im].id_;
-        imId = (imId -3)%5+1;
         if (imId == id)
             layer.removeMarker(layer.markers[im]);
     }
 }
 
 function getUserId(username) {
+    if (username == "wang") return 3;
     for (var i = 0; i < users.length; i++) {
         if (users[i].user.userName == username)
             return users[i].userid;
