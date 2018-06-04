@@ -335,7 +335,7 @@ public class svm_scale_for_predict
 			for(i=next_index;i<= max_index;i++)
 				output(i, 0, scaledUserData);
 
-			System.out.print("\n");
+//			System.out.print("\n");
 		}
 		if (new_num_nonzeros > num_nonzeros)
 			System.err.print(

@@ -275,7 +275,7 @@ public class DemoApplicationTests {
 
 	@Test
 	public void getCnnSrc(){
-		String filename = "E:\\tablet_mi_test\\tablet";
+		String filename = "E:\\tablet_mi_test\\mi";
 		List<String> locStrings = getCNNPointLoc();
 		List<String> fileList = FileTool.traverseFolder(filename);
 		HashMap<String,String> newName =  RssiTool.getCNNNameChangeMap();
@@ -299,6 +299,7 @@ public class DemoApplicationTests {
 						else System.out.print(0+" ");
 					}
 					System.out.println(locStrings.get(curFile));
+//					System.out.println(curFile);
 					br.readLine();
 					br.readLine();
 					str = br.readLine();

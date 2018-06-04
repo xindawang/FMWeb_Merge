@@ -1,10 +1,13 @@
 package com.tqh.demo.service;
 
+import com.tqh.demo.mapper.PointLocationMapper;
 import com.tqh.demo.mapper.UserLocationMapper;
 import com.tqh.demo.mapper.UserMapper;
+import com.tqh.demo.model.PointLocation;
 import com.tqh.demo.model.RpEntity;
 import com.tqh.demo.model.User;
 import com.tqh.demo.model.UserLocation;
+import com.tqh.demo.svm.Main;
 import com.tqh.demo.util.RssiTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,9 @@ public class UserLocationService {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    PointLocationMapper pointLocationMapper;
 
     @Autowired
     KnnService knnService;
@@ -61,6 +67,20 @@ public class UserLocationService {
         IPositioningAlgorithm positioningAlgorithm;
 
         //choose algorithm
+        if (algorithm.contains("svm")) {
+            //svm中的类，名字是学弟取的
+            Main main = new Main();
+            String locName = main.getSvmResult(rpEntity.getPoints());
+            if (locName !=null) {
+                PointLocation pointLocation = pointLocationMapper.getPointLocation(locName);
+                double result_x = pointLocation.getX()/Math.pow(10,6) + 12735839;
+                double result_y = pointLocation.getY()/Math.pow(10,6) + 3569534;
+                rpEntity.setX(result_x);
+                rpEntity.setY(result_y);
+            }
+            return;
+        }
+
         if (algorithm.contains("knn")) positioningAlgorithm = knnService;
         else positioningAlgorithm = bayesService;
 

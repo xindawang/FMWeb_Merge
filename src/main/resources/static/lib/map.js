@@ -177,7 +177,8 @@ function clearFormerMarker(user){
     var layer = group.getOrCreateLayer('imageMarker');
 
     for (var im =0;im<layer.markers.length;im++){
-        var imId = layer.markers[im].id_
+        var imId = layer.markers[im].id_;
+        imId = (imId -3)%5+1;
         if (imId == id)
             layer.removeMarker(layer.markers[im]);
     }

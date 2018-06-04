@@ -1,6 +1,6 @@
 package com.tqh.demo.svm.service;
 
-import  com.tqh.demo.svm.libsvm.*;
+import com.tqh.demo.svm.libsvm.*;
 
 import java.applet.Applet;
 import java.awt.*;

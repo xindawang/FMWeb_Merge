@@ -1,6 +1,6 @@
 package com.tqh.demo.svm.service;
 
-import  com.tqh.demo.svm.libsvm.*;
+import com.tqh.demo.svm.libsvm.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -124,9 +124,9 @@ public class svm_predict {
 							((total*sumvv-sumv*sumv)*(total*sumyy-sumy*sumy))+
 					" (regression)\n");
 		}
-		else
-			svm_predict.info("Accuracy = "+(double)correct/total*100+
-					"% ("+correct+"/"+total+") (classification)\n");
+//		else
+//			svm_predict.info("Accuracy = "+(double)correct/total*100+
+//					"% ("+correct+"/"+total+") (classification)\n");
 	}
 
 	private static void exit_with_help()
